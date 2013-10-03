@@ -1,0 +1,3 @@
+1) Move tabs generation and handlling to background page
+2) rename browser_action/browser_action.html to tabspane.html
+3) Implement screenshot generation on tab activation/loca event

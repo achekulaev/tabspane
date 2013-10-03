@@ -23,6 +23,8 @@
     "newtab": "src/override/override.html"
   },
   "permissions": [
-    "tabs"
+    "tabs",
+    "unlimitedStorage",
+    "<all_urls>"
   ]
 }

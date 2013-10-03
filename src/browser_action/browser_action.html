@@ -15,16 +15,28 @@
 	h1 {
 		font-size: 2em;
 	}
+
+	.tabThumb {
+		border: 1px solid silver;
+		margin: 1px;
+	}
+	.tabIcon {
+		width: 16px;
+		height: 16px;
+		float: left;
+		margin: 0 3px 0 0;
+		border: 0;
+	}
 </style>
 </head>
 
 <body>
-	<div id="mainPopup">
-	<h1>Hello extensionizr!</h1>
-	<p>Changing..</p>
-	</div>
+<div id="mainPopup">
+	<p>Loading...</p>
+</div>
 
 <script src="../../js/jquery/jquery.js"></script>
+<script src="../lib/html2canvas/html2canvas.js"></script>
 <script src="browser_action.js"></script>
 </body>
 </html>

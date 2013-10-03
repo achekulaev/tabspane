@@ -11,3 +11,9 @@ chrome.extension.onMessage.addListener(
   	chrome.pageAction.show(sender.tab.id);
     sendResponse();
   });
+
+chrome.browserAction.onClicked.addListener(function(tab) {
+  chrome.tabs.create({'url': chrome.extension.getURL('src/browser_action/browser_action.html')}, function(tab) {
+    // Tab opened.
+  });
+});

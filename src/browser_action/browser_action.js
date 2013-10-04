@@ -1,27 +1,20 @@
-var currentWindowTabs = [];
-var tabsPane = jQuery('#mainPopup');
-
-chrome.tabs.query({
-	currentWindow: true
-}, function(tabs){
-	currentWindowTabs = tabs;
-	populateTabs(tabs);
-});
+var tabsPane = jQuery('#tabsPane');
+populateTabs(chrome.extension.getBackgroundPage().currentWindowTabs);
 
 function populateTabs(tabs) {
 	tabsPane.html('');
 	// var html = '';
 	for (var i in tabs) {
-		renderTabThumb(tabs[i]);
+		renderTabThumb(tabs[i], tabsPane);
 		// html += tabs[i].title + '<br/>';
 	}
 }
 
-function renderTabThumb(tab) {
+function renderTabThumb(tab, DOMElement) {
 	// chrome.tabs.captureVisibleTab(tab.windowId, {"format":"png"}, function(imgData) {
 	// 	getTabThumb(tab, imgData).appendTo(tabsPane);
 	// });
-	getTabThumb(tab, null).appendTo(tabsPane);
+	getTabThumb(tab, null).appendTo(DOMElement);
 }
 
 function getTabThumb(tab, screenshot) {

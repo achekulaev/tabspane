@@ -5,6 +5,9 @@
 // });
 
 
+var currentWindowTabs = [];
+var tabsPaneBg = jQuery('#tabsPaneBg');
+
 //example of using a message handler from the inject scripts
 chrome.extension.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -15,5 +18,14 @@ chrome.extension.onMessage.addListener(
 chrome.browserAction.onClicked.addListener(function(tab) {
   chrome.tabs.create({'url': chrome.extension.getURL('src/browser_action/browser_action.html')}, function(tab) {
     // Tab opened.
+	// var paneTab = chrome.extension.getViews({'type':'tab'});
   });
 });
+
+chrome.tabs.query({
+	currentWindow: true
+}, function(tabs){
+	currentWindowTabs = tabs;
+	// populateTabs(tabs);
+});
+

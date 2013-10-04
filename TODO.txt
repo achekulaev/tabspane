@@ -1,3 +1,3 @@
-1) Move tabs generation and handlling to background page
+1) Async prompt BG page for tabs not just use var as it may be empty
 2) rename browser_action/browser_action.html to tabspane.html
 3) Implement screenshot generation on tab activation/loca event

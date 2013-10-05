@@ -6,26 +6,27 @@
 
 
 var currentWindowTabs = [];
-var tabsPaneBg = jQuery('#tabsPaneBg');
 
 //example of using a message handler from the inject scripts
 chrome.extension.onMessage.addListener(
-  function(request, sender, sendResponse) {
-  	chrome.pageAction.show(sender.tab.id);
-    sendResponse();
+  function (request, sender, sendResponse) {
+    // Async query for tabs
+    chrome.tabs.query({
+      currentWindow: true
+    }, function (tabs) {
+      currentWindowTabs = tabs;
+      sendResponse(currentWindowTabs);
+    });
+
+    // Return true to notify that response will be asynchronous
+    return true;
   });
 
-chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.tabs.create({'url': chrome.extension.getURL('src/browser_action/browser_action.html')}, function(tab) {
+chrome.browserAction.onClicked.addListener(function (tab) {
+  chrome.tabs.create({'url': chrome.extension.getURL('src/browser_action/browser_action.html')}, function (tab) {
     // Tab opened.
-	// var paneTab = chrome.extension.getViews({'type':'tab'});
+    // var paneTab = chrome.extension.getViews({'type':'tab'});
   });
 });
 
-chrome.tabs.query({
-	currentWindow: true
-}, function(tabs){
-	currentWindowTabs = tabs;
-	// populateTabs(tabs);
-});
 

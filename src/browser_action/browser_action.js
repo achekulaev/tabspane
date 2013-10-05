@@ -1,5 +1,9 @@
 var tabsPane = jQuery('#tabsPane');
-populateTabs(chrome.extension.getBackgroundPage().currentWindowTabs);
+chrome.runtime.sendMessage(null, {'command': 'tabsList'}, function (tabsList) {
+//    populateTabs(chrome.extension.getBackgroundPage().currentWindowTabs);
+  populateTabs(tabsList);
+});
+
 
 function populateTabs(tabs) {
 	tabsPane.html('');

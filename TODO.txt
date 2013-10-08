@@ -1,6 +1,16 @@
-- Implement screenshot generation on tab de-activation event (http://developer.chrome.com/extensions/tabs.html)
+- Implement default tab capture based on favicon
 - Implement simple tab grouping
 - Implement saving of tabs with groups to bookmarks
 
 - fix or use other icons for service tabs that reference icons from chrome://theme/
   Looks like chrome can't allow these urls (https://code.google.com/p/chromium/issues/detail?id=11854)
+
+...
+
+- Implement omnibox keyword http://developer.chrome.com/extensions/omnibox.html
+
+----
+
+Info
+
+Hotkeys: http://stackoverflow.com/questions/5498893/chrome-extension-how-to-get-key-events

@@ -1,13 +1,24 @@
-- Implement default tab capture based on favicon
-- Implement simple tab grouping
-- Implement saving of tabs with groups to bookmarks
+ver 0.0.2
++ add default tab capture based on favicon
++ hotkey to call tabsPane
++ single instance of tabsPane page
 
-- fix or use other icons for service tabs that reference icons from chrome://theme/
+ver 0.0.3
++ Implement simple tab grouping
+
+ver 0.0.4
++ replace new tab page with tabsPane
+
+ver 0.1
++ Save tabs with groups to bookmarks. Restore from bookmarks on browser launch
+* fix or use other icons for service tabs that reference icons from chrome://theme/
   Looks like chrome can't allow these urls (https://code.google.com/p/chromium/issues/detail?id=11854)
 
-...
+ver 0.3
++ Implement omnibox keyword http://developer.chrome.com/extensions/omnibox.html
 
-- Implement omnibox keyword http://developer.chrome.com/extensions/omnibox.html
+ver 0.5
++ Offline tabs feature (save closed tabs in tabspane for reopen)
 
 ----
 

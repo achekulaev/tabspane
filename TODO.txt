@@ -25,6 +25,7 @@ ver 0.5
 + Offline tabs feature (save closed tabs in tabspane for reopen)
 
 ver 1.0
+Date: December 2013
 Requirements: Rich javascript enables moving between groups, groups and tabs can be made persistent, tabs searchable
             including omnibox keyword. Bookmarks treated as persistent offline tabs, folders - as saved groups.
 + Make extension icon

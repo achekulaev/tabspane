@@ -1,4 +1,5 @@
 ver 0.0.2
++ make capture image clickable
 + add default tab capture based on favicon
 + hotkey to call tabsPane
 + single instance of tabsPane page
@@ -19,6 +20,9 @@ ver 0.3
 
 ver 0.5
 + Offline tabs feature (save closed tabs in tabspane for reopen)
+
+ver 1.0
++ Publish to Google Market
 
 ----
 

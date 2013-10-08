@@ -23,7 +23,7 @@ function renderTabThumb(tab, DOMElement) {
 
 function getTabThumb(tab, screenshot) {
 	var tabIcon = jQuery('<img/>', {
-		src: tab.favIconUrl,
+		src: tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png'),
 		class: 'tabIcon'
 	});
 	var tabTitle = jQuery('<div/>', {

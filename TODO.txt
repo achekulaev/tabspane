@@ -1,2 +1,6 @@
 - rename browser_action/browser_action.html to tabspane.html
-- Implement screenshot generation on tab activation/loca event
+- add default tab favicon if absent
+- implement tab activation on click
+- Implement screenshot generation on tab de-activation event
+- Implement simple tab grouping
+- Implement saving of tabs with groups to bookmarks

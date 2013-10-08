@@ -22,14 +22,23 @@ function renderTabThumb(tab, DOMElement) {
 }
 
 function getTabThumb(tab, screenshot) {
+  //icon
 	var tabIcon = jQuery('<img/>', {
 		src: tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png'),
 		class: 'tabIcon'
 	});
-	var tabTitle = jQuery('<div/>', {
-		class: 'tabTitle',
-		text:  tab.title
-	});
+  //title
+  var tabTitle = jQuery('<a/>', {
+    class: 'tabTitle',
+    text:  tab.title,
+    on: {
+      click: function (event) {
+        activateTab(tab.id);
+      }
+    }
+  });
+
+  //whole markup
 	var tabThumb = jQuery('<div/>', {
 		id:   'tabThumb' + tab.id,
 		class:'tabThumb'
@@ -37,4 +46,10 @@ function getTabThumb(tab, screenshot) {
 	tabIcon.appendTo(tabThumb);
 	tabTitle.appendTo(tabThumb);
 	return tabThumb;
+}
+
+function activateTab(tabID) {
+  if (tabID != null) {
+    chrome.tabs.update(tabID, {'active':true});
+  }
 }

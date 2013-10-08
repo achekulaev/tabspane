@@ -1,5 +1,4 @@
-- implement tab activation on click
-- Implement screenshot generation on tab de-activation event
+- Implement screenshot generation on tab de-activation event (http://developer.chrome.com/extensions/tabs.html)
 - Implement simple tab grouping
 - Implement saving of tabs with groups to bookmarks
 

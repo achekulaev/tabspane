@@ -1,4 +1,3 @@
-- rename browser_action/browser_action.html to tabspane.html
 - add default tab favicon if absent
 - implement tab activation on click
 - Implement screenshot generation on tab de-activation event

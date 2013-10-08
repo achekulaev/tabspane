@@ -23,7 +23,7 @@ chrome.extension.onMessage.addListener(
   });
 
 chrome.browserAction.onClicked.addListener(function (tab) {
-  chrome.tabs.create({'url': chrome.extension.getURL('src/browser_action/browser_action.html')}, function (tab) {
+  chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')}, function (tab) {
     // Tab opened.
     // var paneTab = chrome.extension.getViews({'type':'tab'});
   });

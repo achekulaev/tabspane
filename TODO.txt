@@ -1,13 +1,16 @@
 ver 0.0.3
-+ add default tab capture based on favicon
-+ capture generation on tab reload event
-+ hotkey to call tabsPane
 + single instance of tabsPane page
-+ ability to close tab
++ hotkey to call tabsPane
++ add default tab capture based on favicon
++ capture generation on tab reload event (unless this tab was reloaded at past 5 seconds, to prevent overgeneration when redirects are happening)
++ ability to close tab with [x]
 
 ver 0.0.4
 + Implement simple tab grouping
 + Options page to customize hotkey
+
+var 0.0.5
++ Tabs/Groups Filter/Search field with hotkey
 
 ver 0.1
 Requirements: Tabs are shown with screenshots, groupable, groups survive browser restart

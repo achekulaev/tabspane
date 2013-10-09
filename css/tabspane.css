@@ -1,0 +1,31 @@
+#mainPopup {
+    padding: 10px;
+    font-family: Helvetica, Ubuntu, Arial, sans-serif;
+}
+h1 {
+    font-size: 2em;
+}
+
+.tabThumb {
+    border: 1px solid silver;
+    margin: 1px;
+}
+.tabCapture {
+    display: block;
+    width: 100px;
+    height: 100px;
+}
+.tabIcon {
+    width: 16px;
+    height: 16px;
+    float: left;
+    margin: 0 3px 0 0;
+    border: 0;
+}
+.tabTitle {
+    display: block;
+}
+.tabTitle:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}

@@ -1,16 +1,14 @@
-ver 0.0.2
+ver 0.0.3
++ exclude self from tabs list
 + make capture image clickable
 + add default tab capture based on favicon
 + capture generation on tab reload event
 + hotkey to call tabsPane
 + single instance of tabsPane page
 
-ver 0.0.3
+ver 0.0.4
 + Implement simple tab grouping
 + Options page to customize hotkey
-
-ver 0.0.4
-+ replace new tab page with tabsPane
 
 ver 0.1
 Requirements: Tabs are shown with screenshots, groupable, groups survive browser restart

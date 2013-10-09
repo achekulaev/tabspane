@@ -4,6 +4,7 @@
   "manifest_version": 2,
   "description": "Tabs Pain relief. Expose like functionality for Chrome",
   "homepage_url": "https://github.com/achekulaev/tabspane",
+  "minimum_chrome_version":"30.0.0.0",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -20,11 +21,12 @@
     "default_title": "browser action demo"
   },
   "chrome_url_overrides": {
-    "newtab": "src/override/override.html"
+    "newtab": "override.html"
   },
   "permissions": [
     "tabs",
     "unlimitedStorage",
     "<all_urls>"
-  ]
+  ],
+  "offline_enabled": true
 }

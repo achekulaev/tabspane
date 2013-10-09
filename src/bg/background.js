@@ -34,12 +34,14 @@ chrome.extension.onMessage.addListener(
     return true;
   });
 
+//React on extension icon click
 chrome.browserAction.onClicked.addListener(function (tab) {
   chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')}, function (tab) {
     // Tab opened.
   });
 });
 
+//Generate screenshot (capture) on tab activation event
 chrome.tabs.onActivated.addListener(function(activeInfo) {
   console.log('Capturing tab ' + activeInfo.tabId);
   chrome.tabs.captureVisibleTab(activeInfo.windowId, {'format':'jpeg', 'quality': 80}, function(dataUrl){

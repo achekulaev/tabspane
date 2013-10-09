@@ -5,6 +5,7 @@ ver 0.0.3
 + capture generation on tab reload event
 + hotkey to call tabsPane
 + single instance of tabsPane page
++ ability to close tab
 
 ver 0.0.4
 + Implement simple tab grouping
@@ -12,7 +13,7 @@ ver 0.0.4
 
 ver 0.1
 Requirements: Tabs are shown with screenshots, groupable, groups survive browser restart
-+ Save tabs with groups to bookmarks. Restore from bookmarks on browser launch
++ Save tabs with groups to bookmarks. Restore from bookmarks on browser launch (http://developer.chrome.com/extensions/samples.html)
 * fix or use other icons for service tabs that reference icons from chrome://theme/
   Looks like chrome can't allow these urls (https://code.google.com/p/chromium/issues/detail?id=11854)
 
@@ -34,3 +35,6 @@ Requirements: Rich javascript enables moving between groups, groups and tabs can
 Info
 
 Hotkeys: http://stackoverflow.com/questions/5498893/chrome-extension-how-to-get-key-events
+
+jQuery(window.getSelection().focusNode.parentElement).css({'border':'1px solid red'})
+

@@ -50,26 +50,27 @@ function renderTab(tab) {
 		class: 'tabIcon'
 	});
   //title
-  var tabTitle = jQuery('<a/>', {
-    class: 'tabTitle',
-    text:  tab.title,
+  var tabDescription = jQuery('<a/>', {
+    class: 'tabDescription',
     on: {
       click: function (event) {
         activateTab(tab.id);
       }
     }
-  });
+  }).html('<b>' + tab.title + '</b> (' + tab.url + ')');
 
-  //Compile whole markup
+  //holder element
 	var tabThumb = jQuery('<div/>', {
 		id:   'tabThumb' + tab.id,
 		class:'tabThumb'
 	});
+
+  //Compile whole markup
   if (tabCapture != null) {
     tabCapture.appendTo(tabThumb);
   }
 	tabIcon.appendTo(tabThumb);
-	tabTitle.appendTo(tabThumb);
+	tabDescription.appendTo(tabThumb);
 	return tabThumb;
 }
 

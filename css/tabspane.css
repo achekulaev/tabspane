@@ -22,10 +22,10 @@ h1 {
     margin: 0 3px 0 0;
     border: 0;
 }
-.tabTitle {
+.tabDescription {
     display: block;
 }
-.tabTitle:hover {
+.tabDescription:hover {
     text-decoration: underline;
     cursor: pointer;
 }

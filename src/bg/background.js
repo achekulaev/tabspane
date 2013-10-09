@@ -8,7 +8,7 @@
 var currentWindowTabs = [];
 var tabCaptures = [];
 
-//example of using a message handler from the inject scripts
+//Message handling
 chrome.extension.onMessage.addListener(
   function (request, sender, sendResponse) {
     if (!request.hasOwnProperty('command')) {
@@ -18,7 +18,8 @@ chrome.extension.onMessage.addListener(
       case 'tabList':
         // Async query for tabs
         chrome.tabs.query({
-          currentWindow: true
+          currentWindow: true,
+          active: false
         }, function (tabs) {
           currentWindowTabs = tabs;
           sendResponse({'tabs':currentWindowTabs, 'tabCaptures':tabCaptures});
@@ -36,7 +37,6 @@ chrome.extension.onMessage.addListener(
 chrome.browserAction.onClicked.addListener(function (tab) {
   chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')}, function (tab) {
     // Tab opened.
-    // var paneTab = chrome.extension.getViews({'type':'tab'});
   });
 });
 

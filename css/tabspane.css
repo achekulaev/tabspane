@@ -1,5 +1,11 @@
-#mainPopup {
-    padding: 10px;
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Open Sans'), local('OpenSans'), url('../fonts/Open_Sans/OpenSans-Regular.ttf');
+}
+
+#tabsPane {
     font-family: Helvetica, Ubuntu, Arial, sans-serif;
 }
 h1 {

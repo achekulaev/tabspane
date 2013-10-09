@@ -1,4 +1,7 @@
 var tabsPane = jQuery('#tabsPane');
+if (navigator.platform == 'MacIntel') {
+  tabsPane.addClass('osx');
+}
 
 //Initial pane load
 chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {

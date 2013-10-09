@@ -1,12 +1,12 @@
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Open Sans'), local('OpenSans'), url('../fonts/Open_Sans/OpenSans-Regular.ttf');
-}
+@import "../fonts/Open_Sans/OpenSans.css";
 
 #tabsPane {
-  font-family: Helvetica, Ubuntu, Arial, sans-serif;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+}
+#tabsPane.osx {
+  font-family: 'Lucida Grande', sans-serif;
+  font-size: 13px;
 }
 
 h1 {

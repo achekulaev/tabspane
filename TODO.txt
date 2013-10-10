@@ -1,15 +1,13 @@
 ver 0.0.3
-+ single instance of tabsPane page
-+ hotkey to call tabsPane
-+ add default tab capture based on favicon
-+ capture generation on tab reload event (unless this tab was reloaded at past 5 seconds, to prevent overgeneration when redirects are happening)
++ add favicon to default tab capture
 + ability to close tab with [x]
 
 ver 0.0.4
-+ Implement simple tab grouping
++ capture generation on tab reload event (unless this tab was reloaded at past 5 seconds, to prevent overgeneration when redirects are happening)
 + Options page to customize hotkey
 
 var 0.0.5
++ Implement simple tab grouping
 + Tabs/Groups Filter/Search field with hotkey
 
 ver 0.1
@@ -30,7 +28,7 @@ Requirements: Rich javascript enables moving between groups, groups and tabs can
             including omnibox keyword. Bookmarks treated as persistent offline tabs, folders - as saved groups.
 + Make extension icon
 + Publish to Google Market
-
++ Documentation how to assign hotkey to call TabsPane
 ----
 
 Info

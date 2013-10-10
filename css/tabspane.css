@@ -19,25 +19,27 @@ body {
 
 .tabThumb {
   margin: 0;
-  overflow: hidden;
   width: 300px;
+  padding: 10px;
+  display: inline-block;
+
 }
 
 .tabThumb:hover {
   cursor: pointer;
 }
 
-.tabThumb.tabHighlighted {
-  background-image: -webkit-gradient(
-    linear,
-    left bottom,
-    left top,
-    color-stop(0.28, rgb(219,219,219)),
-    color-stop(0.64, rgb(255,255,255))
-  );
+.tabThumb.tabHighlighted .tabCapture {
+  border: 3px solid dodgerblue;
+}
+
+.tabThumb.tabHighlighted .tabDescription {
+  color: white;
+  text-shadow: 0 2px dodgerblue;
 }
 
 .tabCapture {
+  border: 3px solid transparent;
   display: block;
   width: 280px;
   height: 210px;
@@ -46,7 +48,7 @@ body {
 .tabIcon {
   width: 16px;
   height: 16px;
-  /*float: left;*/
+  float: left;
   margin: 0 3px 0 0;
   border: 0;
 }
@@ -55,5 +57,6 @@ body {
   width: 264px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  /* not using ellipsis because it truncates text */
+  -webkit-mask-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 1) 85%, rgba(0, 0, 0, 0) 100%);
 }

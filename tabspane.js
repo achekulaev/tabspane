@@ -86,6 +86,37 @@ function activateTab(tabId) {
   }
 }
 
+//  "commands": {
+//    "_execute_browser_action": {
+//      "suggested_key": {
+//        "default": "Ctrl+Shift+E",
+//        "mac": "Command+Shift+E"
+//      }
+//    }
+//  },
+//
+//chrome.commands.onCommand.addListener(function(command){
+//  switch (command) {
+//    case "activate":
+//      chrome.tabs.query({
+//        currentWindow: true,
+//        url: chrome.extension.getURL('') + '*'
+//      }, function (tabs) {
+//        if (tabs.length) {
+//          //
+//        } else {
+//          chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')});
+//        }
+//      });
+//      break;
+//    default:
+//      return false;
+//  }
+//});
+
+
+
+
 // I wanted to search for tab name or url but it's not time to write that functionality
 // but as I needed it right now(!) I wrote this quick hack. Search for tab with Cmd+F
 // then hit Esc - text remains selected. Press enter to activate that tab
@@ -121,6 +152,10 @@ $(document).keyup(function(event){
   if (event.keyCode == 27 && tabThumbHighlighted) {
     if (escapeState) {
       window.getSelection().removeAllRanges();
+      $('.tabDescription').each(function() {
+        //return line back after page find was performed
+        this.scrollLeft = 0;
+      });
     }
     escapeState = !escapeState;
   }

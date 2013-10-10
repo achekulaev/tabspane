@@ -1,8 +1,16 @@
 @import "../fonts/Open_Sans/OpenSans.css";
 
+body {
+  margin: 0;
+}
+
 #tabsPane {
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
+  font-weight: bold;
+  background: url(../img/paneBackground.png);
+  color: #bdbdbd;
+  text-shadow: 0 2px #1d1d1d;
 }
 #tabsPane.osx {
   font-family: 'Lucida Grande', sans-serif;
@@ -10,8 +18,9 @@
 }
 
 .tabThumb {
-  border: 1px solid silver;
-  margin: 1px;
+  margin: 0;
+  overflow: hidden;
+  width: 300px;
 }
 
 .tabThumb:hover {
@@ -30,22 +39,21 @@
 
 .tabCapture {
   display: block;
-  width: 100px;
-  height: 100px;
+  width: 280px;
+  height: 210px;
 }
 
 .tabIcon {
   width: 16px;
   height: 16px;
-  float: left;
+  /*float: left;*/
   margin: 0 3px 0 0;
   border: 0;
 }
 
 .tabDescription {
-
-}
-
-.tabThumb:hover .tabDescription {
-  text-decoration: underline;
+  width: 264px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

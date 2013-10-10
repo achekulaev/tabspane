@@ -40,13 +40,12 @@ function refreshPane(tabs) {
  */
 function renderTab(tab) {
   //capture
-  var tabCapture, captureImage = chrome.extension.getBackgroundPage().tabCaptures[tab.id];
-  if (captureImage != null) {
-    tabCapture = jQuery('<img/>', {
-      src: captureImage,
-      class: 'tabCapture'
-    });
-  }
+  var greyPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAACXZwQWcAAAABAAAAAQDHlV/tAAAAC0lEQVQI12N4/x8AAuAB7zuPUI4AAAAASUVORK5CYII=';
+  var captureImage = chrome.extension.getBackgroundPage().tabCaptures[tab.id];
+  var tabCapture = jQuery('<img/>', {
+    src: captureImage != null ? captureImage : greyPixel,
+    class: 'tabCapture'
+  });
   //icon
 	var tabIcon = jQuery('<img/>', {
 		src: tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png'),
@@ -92,6 +91,7 @@ function activateTab(tabId) {
 // then hit Esc - text remains selected. Press enter to activate that tab
 //--------- Temporary decision BEGIN.
 var tabThumbHighlighted = null; //the div.tabThumb which has text selected
+var escapeState = false;
 
 // Timer to watch selection. (Cmd+F , type text, hit Esc)
 var selectionWatch = setInterval(function(){
@@ -113,6 +113,20 @@ $(document).keypress(function(event) {
       activateTab(tabId);
     }
   }
-})
+});
+
+//Clear selection on second escape press only
+//other key reset escapeState
+$(document).keyup(function(event){
+  if (event.keyCode == 27 && tabThumbHighlighted) {
+    if (escapeState) {
+      window.getSelection().removeAllRanges();
+    }
+    escapeState = !escapeState;
+  }
+  if (event.keyCode != 27) {
+    escapeState = false;
+  }
+});
 //---------- Temporary decision END
 

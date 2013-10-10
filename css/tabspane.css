@@ -17,27 +17,19 @@ body {
   font-size: 13px;
 }
 
-.tabThumb {
-  margin: 0;
-  width: 31%;
-  padding: 10px;
+.tabOuter {
+  width: 33%;
   display: inline-block;
-}
-
-.tabThumb:hover {
-  cursor: pointer;
+  margin-bottom: 5em;
+  min-width: 333px;
 }
 
 .tabThumb.tabHighlighted .tabCapture,
 .tabThumb:hover .tabCapture {
+  cursor: pointer;
   margin: 0 auto;
   border: 4px solid #3496f7;
   border-radius: 2px;
-}
-
-.tabThumb.tabHighlighted .tabDescription {
-  color: white;
-  text-shadow: 0 2px 3px dodgerblue;
 }
 
 .tabCapture {
@@ -47,6 +39,12 @@ body {
   padding: 1px;
   margin: 4px auto;
   box-shadow: 0 5px 10px #000;
+}
+
+.tabFooter {
+  width: 283px;
+  margin: 0 auto;
+  padding-top: 1em;
 }
 
 .tabIcon {

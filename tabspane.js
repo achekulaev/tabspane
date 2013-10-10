@@ -39,41 +39,38 @@ function refreshPane(tabs) {
  * Renders single tab representation
  */
 function renderTab(tab) {
+  var skeleton = $(
+    '<div class="tabOuter">' + // I have to append this div, otherwise jQuery doesn't see .tabThumb until it's appended
+      '<div class="tabThumb">' +
+        '<img class="tabCapture" />' +
+        '<div class="tabFooter">' +
+          '<img class="tabIcon" />' +
+          '<div class="tabDescription"></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>');
+
+
   //capture
   var greyPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAACXZwQWcAAAABAAAAAQDHlV/tAAAAC0lEQVQI12N4/x8AAuAB7zuPUI4AAAAASUVORK5CYII=';
   var captureImage = chrome.extension.getBackgroundPage().tabCaptures[tab.id];
-  var tabCapture = jQuery('<img/>', {
-    src: captureImage != null ? captureImage : greyPixel,
-    class: 'tabCapture'
-  });
+  skeleton.find('.tabCapture').attr('src', captureImage != null ? captureImage : greyPixel);
+
   //icon
-	var tabIcon = jQuery('<img/>', {
-		src: tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png'),
-		class: 'tabIcon'
-	});
+  skeleton.find('.tabIcon').attr('src', tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png'));
+
   //title
-  var tabDescription = jQuery('<div/>', {
-    class: 'tabDescription'
-  }).html('<b>' + tab.title + '</b> (' + tab.url + ')');
+  skeleton.find('.tabDescription').html('<b>' + tab.title + '</b> (' + tab.url + ')');
 
-  //holder element
-	var tabThumb = jQuery('<div/>', {
-		id:   'tabThumb' + tab.id,
-		class:'tabThumb'
-	});
+  //holder
+  skeleton
+    .find('.tabThumb')
+    .attr('id', 'tabThumb' + tab.id)
+    .click(function() {
+      activateTab(tab.id);
+    });
 
-  //Compile whole markup
-  if (tabCapture != null) {
-    tabCapture.appendTo(tabThumb);
-  }
-	tabIcon.appendTo(tabThumb);
-	tabDescription.appendTo(tabThumb);
-
-  //Assign click
-  $(tabThumb).click(function() {
-    activateTab(tab.id);
-  });
-	return tabThumb;
+	return skeleton;
 }
 
 /**

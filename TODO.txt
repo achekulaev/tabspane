@@ -1,14 +1,14 @@
-ver 0.0.3
+ver 0.0.4
 * delete tab capture on tab close
 + add favicon to default tab capture
 + ability to close tab with [x]
 + movement with arrows
 
-ver 0.0.4
+ver 0.0.5
 + capture generation on tab reload event (unless this tab was reloaded at past 5 seconds, to prevent overgeneration when redirects are happening)
 + group by opener http://developer.chrome.com/extensions/webNavigation.html#event-onCreatedNavigationTarget
 
-var 0.0.5
+var 0.0.6
 + Implement simple custom tab grouping
 + Tabs/Groups Filter/Search field with hotkey
 

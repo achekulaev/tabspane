@@ -2,13 +2,13 @@
 
 body {
   margin: 0;
+  background: url(../img/paneBackground.png);
 }
 
 #tabsPane {
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
   font-weight: bold;
-  background: url(../img/paneBackground.png);
   color: #bdbdbd;
   text-shadow: 0 2px #1d1d1d;
 }
@@ -19,42 +19,46 @@ body {
 
 .tabThumb {
   margin: 0;
-  width: 300px;
+  width: 31%;
   padding: 10px;
   display: inline-block;
-
 }
 
 .tabThumb:hover {
   cursor: pointer;
 }
 
-.tabThumb.tabHighlighted .tabCapture {
-  border: 3px solid dodgerblue;
+.tabThumb.tabHighlighted .tabCapture,
+.tabThumb:hover .tabCapture {
+  margin: 0 auto;
+  border: 4px solid #3496f7;
+  border-radius: 2px;
 }
 
 .tabThumb.tabHighlighted .tabDescription {
   color: white;
-  text-shadow: 0 2px dodgerblue;
+  text-shadow: 0 2px 3px dodgerblue;
 }
 
 .tabCapture {
-  border: 3px solid transparent;
   display: block;
   width: 280px;
   height: 210px;
+  padding: 1px;
+  margin: 4px auto;
+  box-shadow: 0 5px 10px #000;
 }
 
 .tabIcon {
   width: 16px;
   height: 16px;
   float: left;
-  margin: 0 3px 0 0;
+  margin: 0 3px 0 4px;
   border: 0;
 }
 
 .tabDescription {
-  width: 264px;
+  width: 260px;
   white-space: nowrap;
   overflow: hidden;
   /* not using ellipsis because it truncates text */

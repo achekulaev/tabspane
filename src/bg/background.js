@@ -32,12 +32,21 @@ chrome.extension.onMessage.addListener(
 
     // Return true to notify that response will be asynchronous
     return true;
-  });
+  }
+);
 
 //React on extension icon click
 chrome.browserAction.onClicked.addListener(function (tab) {
-  chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')}, function (tab) {
-    // Tab opened.
+  chrome.tabs.query({
+    currentWindow: true,
+    url: chrome.extension.getURL('') + '*'
+  }, function (tabs) {
+    if (tabs.length) {
+      console.log(tabs);
+      chrome.tabs.update(parseInt(tabs[0].id), {'active':true});
+    } else {
+      chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')});
+    }
   });
 });
 

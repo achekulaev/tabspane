@@ -1,13 +1,14 @@
 ver 0.0.3
+* delete tab capture on tab close
 + add favicon to default tab capture
 + ability to close tab with [x]
 
 ver 0.0.4
 + capture generation on tab reload event (unless this tab was reloaded at past 5 seconds, to prevent overgeneration when redirects are happening)
-+ Options page to customize hotkey
++ group by opener http://developer.chrome.com/extensions/webNavigation.html#event-onCreatedNavigationTarget
 
 var 0.0.5
-+ Implement simple tab grouping
++ Implement simple custom tab grouping
 + Tabs/Groups Filter/Search field with hotkey
 
 ver 0.1
@@ -22,6 +23,9 @@ ver 0.3
 ver 0.5
 + Offline tabs feature (save closed tabs in tabspane for reopen)
 
+var 0.9
++ scroll tabPane view to last active tab
+
 ver 1.0
 Date: December 2013
 Requirements: Rich javascript enables moving between groups, groups and tabs can be made persistent, tabs searchable
@@ -29,6 +33,7 @@ Requirements: Rich javascript enables moving between groups, groups and tabs can
 + Make extension icon
 + Publish to Google Market
 + Documentation how to assign hotkey to call TabsPane
+
 ----
 
 Info

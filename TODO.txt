@@ -2,6 +2,7 @@ ver 0.0.3
 * delete tab capture on tab close
 + add favicon to default tab capture
 + ability to close tab with [x]
++ movement with arrows
 
 ver 0.0.4
 + capture generation on tab reload event (unless this tab was reloaded at past 5 seconds, to prevent overgeneration when redirects are happening)

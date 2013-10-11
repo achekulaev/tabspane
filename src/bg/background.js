@@ -52,9 +52,15 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 
 //Generate screenshot (capture) on tab activation event
 chrome.tabs.onActivated.addListener(function(activeInfo) {
-  console.log('Capturing tab ' + activeInfo.tabId);
   chrome.tabs.captureVisibleTab(activeInfo.windowId, {'format':'jpeg', 'quality': 80}, function(dataUrl){
     tabCaptures[activeInfo.tabId] = dataUrl;
     chrome.runtime.sendMessage(null, {'command': 'refresh'});
   });
+});
+
+//Remove screenshot data on tab close
+chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
+  if (tabCaptures[tabId] != null) {
+    tabCaptures[tabId] = null;
+  }
 });

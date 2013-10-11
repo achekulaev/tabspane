@@ -1,5 +1,4 @@
 ver 0.0.4
-* delete tab capture on tab close
 + add favicon to default tab capture
 + ability to close tab with [x]
 + movement with arrows

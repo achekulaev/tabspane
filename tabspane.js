@@ -70,6 +70,11 @@ function renderTab(tab) {
       '</div>' +
     '</div>');
 
+  //icon & title
+  var favIconUrl = tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png');
+  skeleton.find('.tabIcon').attr('src', favIconUrl);
+  skeleton.find('.tabDescription').html(tab.title + ' (' + tab.url + ')');
+
   //capture
   var captureImage = chrome.extension.getBackgroundPage().tabCaptures[tab.id];
   var tabCapture = skeleton.find('.tabCapture');
@@ -80,12 +85,14 @@ function renderTab(tab) {
         'background-size': 'cover'
       });
   } else {
-    tabCapture.css('background', 'radial-gradient(#ddd, #fff 93%, #fff 18%)');
+    // default tab capture image
+    tabCapture.css({
+      'background-image': 'url(' + favIconUrl + '), radial-gradient(#ddd, #fff 93%, #fff 18%)',
+      'background-repeat': 'no-repeat, repeat',
+      'background-position': 'center center',
+      'background-size': '32px 32px, cover'
+    });
   }
-
-  //icon & title
-  skeleton.find('.tabIcon').attr('src', tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png'));
-  skeleton.find('.tabDescription').html(tab.title + ' (' + tab.url + ')');
 
   //holder
   skeleton.find('.tabThumb')
@@ -127,7 +134,7 @@ function renderTab(tab) {
           .css({'display':'block'});
       }
     } else {
-      hideTimeout = setTimeout(function () { $(button).css({'display':'none','left':0,'top':0}); }, 100);
+      hideTimeout = setTimeout(function () { $(button).css({'display':'none','left':0,'top':0}); }, 50);
     }
   };
 

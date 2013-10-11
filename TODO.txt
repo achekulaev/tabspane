@@ -1,11 +1,9 @@
-ver 0.0.4
-+ add favicon to default tab capture
-
 ver 0.0.5
 * use scss for styles
 + handle tabs one by one. do not reload whole pane each time
 + capture generation on tab reload event (unless this tab was reloaded at past 5 seconds, to prevent overgeneration when redirects are happening)
 + group by opener http://developer.chrome.com/extensions/webNavigation.html#event-onCreatedNavigationTarget
+* fix tab close button positioning (scroll a page. move cursor fast. it disappears)
 
 var 0.0.6
 + Implement simple custom tab grouping

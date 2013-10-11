@@ -63,4 +63,5 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
   if (tabCaptures[tabId] != null) {
     tabCaptures[tabId] = null;
   }
+  chrome.runtime.sendMessage(null, {'command': 'refresh'});
 });

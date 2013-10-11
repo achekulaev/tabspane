@@ -7,6 +7,7 @@ body {
 }
 
 #tabsPane {
+  padding-top: 20px;
   margin: 0 auto; /* matters when width is set tabspane.js:adjustLayout() */
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
@@ -31,6 +32,9 @@ body {
   margin: 0 auto;
   border: 4px solid #3496f7;
   border-radius: 5px;
+}
+.tabThumb.tabHighlighted .tabCapture {
+  border: 4px solid #e59707;
 }
 
 .tabCapture {
@@ -65,4 +69,10 @@ body {
   overflow: hidden;
   /* not using ellipsis because it truncates text */
   -webkit-mask-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 1) 85%, rgba(0, 0, 0, 0) 100%);
+}
+
+.tabCloseButton {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
 }

@@ -91,10 +91,54 @@ function renderTab(tab) {
     .attr('id', 'tabThumb' + tab.id)
     .click(function() {
       activateTab(tab.id);
-    });
+    })
+    .mouseenter(function() { tabCloseButton(tab.id); })
+    .mouseleave(function() { tabCloseButton(null); });
 
 	return skeleton;
 }
+
+/**
+ * Tab close button. Single instance
+ */
+(function(window) {
+  var button =
+    $('<img class="tabCloseButton" src="img/close.png"/>')
+      .css({
+        'display':'none'
+      })
+      .appendTo('body')
+      .click(function(event){ tabCloseButtonAction(); })
+      .mouseenter(function(){ clearTimeout(hideTimeout); })
+      .mouseleave(function(){ tabCloseButton(null); }),
+
+  targetId = null,
+  hideTimeout = null,
+
+  tabCloseButton = function(tabId) {
+    if (tabId != null) {
+      targetId = tabId;
+      var tabThumb = $('#tabThumb' + tabId);
+      if (tabThumb) {
+        clearTimeout(hideTimeout);
+        $(button)
+          .offset($(tabThumb).find('.tabCapture').offset())
+          .css({'display':'block'});
+      }
+    } else {
+      hideTimeout = setTimeout(function () { $(button).css({'display':'none','left':0,'top':0}); }, 100);
+    }
+  };
+
+  function tabCloseButtonAction() {
+    console.log(targetId);
+    chrome.tabs.remove(targetId, function() {
+      $(button).css({'display':'none','left':0,'top':0});
+    });
+  }
+
+  window.tabCloseButton = tabCloseButton;
+})(window);
 
 /**
  * Activates a tab. Used on click events

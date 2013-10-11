@@ -1,6 +1,6 @@
 {
   "name": "TabsPane",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "manifest_version": 2,
   "description": "Tabs Pain relief. Expose like functionality for Chrome",
   "homepage_url": "https://github.com/achekulaev/tabspane",

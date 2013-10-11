@@ -4,9 +4,11 @@
 //     "sample_setting": "This is how you use Store.js to remember values"
 // });
 
+var captureFormat = {'format':'jpeg', 'quality': 80};
 
 var currentWindowTabs = [];
 var tabCaptures = [];
+var activeTab = null;
 
 //Message handling
 chrome.extension.onMessage.addListener(
@@ -50,9 +52,14 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 
 //Generate screenshot (capture) on tab activation event
 chrome.tabs.onActivated.addListener(function(activeInfo) {
-  chrome.tabs.captureVisibleTab(activeInfo.windowId, {'format':'jpeg', 'quality': 80}, function(dataUrl){
+  chrome.tabs.captureVisibleTab(activeInfo.windowId, captureFormat, function(dataUrl){
+    activeTab = activeInfo.tabId;
     tabCaptures[activeInfo.tabId] = dataUrl;
-    chrome.runtime.sendMessage(null, {'command': 'refresh'});
+    chrome.runtime.sendMessage(null, {
+      'command': 'tabUpdate',
+      'changeInfo': {'capture' : tabCaptures[activeInfo.tabId]},
+      'tab': { 'id': activeInfo.tabId } // fake tab object with id only
+    });
   });
 });
 
@@ -61,5 +68,17 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
   if (tabCaptures[tabId] != null) {
     tabCaptures[tabId] = null;
   }
-  chrome.runtime.sendMessage(null, {'command': 'refresh'});
+  chrome.runtime.sendMessage(null, {'command': 'tabRemove', 'tabIdArray': [tabId]});
+});
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  if (changeInfo.status == 'complete') {
+    //refresh capture if current tab finished loading
+    if (tab.id == activeTab) {
+      chrome.tabs.captureVisibleTab(tab.windowId, captureFormat, function(dataUrl){
+        tabCaptures[activeInfo.tabId] = dataUrl;
+      });
+    }
+    chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'changeInfo': changeInfo, 'tab': tab});
+  }
 });

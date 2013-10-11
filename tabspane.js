@@ -14,11 +14,25 @@ chrome.extension.onMessage.addListener(function(request, sender, response) {
     return false;
   }
   switch (request.command) {
-    //refresh the whole pane
+    // refresh the whole pane
     case 'refresh':
       chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
         refreshPane(paneData.tabs);
       });
+      break;
+    // create or update a tab
+    // syntax {command:tabAppend, changeInfo: changeInfo Object, tab: Tab Object}
+    case 'tabUpdate':
+      if (Tabs.exists(request.tab.id)) {
+        Tabs.update(request.changeInfo, request.tab);
+      } else {
+        Tabs.append($(request.tab));
+      }
+      break;
+    // remove tab(s)
+    // syntax {command:tabRemove, tabIdArray:[ array of tab ids ]}
+    case 'tabRemove':
+      Tabs.remove($(request.tabIdArray));
       break;
     default:
       return false;
@@ -42,6 +56,51 @@ function adjustLayout() {
   $('#tabsPane').css({
     'width': (tabOuterWidth * (columns > 0 ? columns : 1))+'px'
   });
+}
+
+Tabs = {
+
+  append: function(tabArray) {
+    $(tabArray).each(function(index, item) {
+      renderTab(item).appendTo(tabsPane);
+    });
+  },
+
+  update: function(changeInfo, tab) {
+    var tabThumb = $('#tabThumb' + tab.id);
+    if (tabThumb != null) {
+      $.each(changeInfo, function(key, value){
+        switch (key) {
+          case 'status':
+            break;
+          case 'url':
+            $('.tabDescription', tabThumb).html(tab.title + ' (' + tab.url + ')')
+            break;
+          case 'favIconUrl':
+            break;
+          case 'capture':
+            $(tabThumb).find('.tabCapture').css({
+              'background': 'url('+ changeInfo.capture +')',
+              'background-size': 'cover'
+            });
+            break;
+          default:
+            break;
+        }
+      });
+    }
+  },
+
+  remove: function(tabIdArray) {
+    $(tabIdArray).each(function(index, item){
+      $('#tabThumb' + item).parent(null).remove();
+    });
+  },
+
+  exists: function(tabId) {
+    return $('#tabThumb' + tabId) != null;
+  }
+
 }
 
 /**

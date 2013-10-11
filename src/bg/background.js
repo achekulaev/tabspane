@@ -42,11 +42,9 @@ chrome.browserAction.onClicked.addListener(function (tab) {
     currentWindow: true,
     url: chrome.extension.getURL('') + '*'
   }, function (tabs) {
-    if (tabs.length) {
-      chrome.tabs.update(parseInt(tabs[0].id), {'active':true});
-    } else {
-      chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')});
-    }
+    tabs.length
+      ? chrome.tabs.update(parseInt(tabs[0].id), {'active':true})
+      : chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')});
   });
 });
 

@@ -1,7 +1,5 @@
 ver 0.0.4
 + add favicon to default tab capture
-+ ability to close tab with [x]
-+ movement with arrows
 
 ver 0.0.5
 * use scss for styles
@@ -12,6 +10,7 @@ ver 0.0.5
 var 0.0.6
 + Implement simple custom tab grouping
 + Tabs/Groups Filter/Search field with hotkey
++ movement with arrows
 
 ver 0.1
 Requirements: Tabs are shown with screenshots, groupable, groups survive browser restart

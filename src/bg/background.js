@@ -37,12 +37,12 @@ chrome.extension.onMessage.addListener(
 
 //React on extension icon click
 chrome.browserAction.onClicked.addListener(function (tab) {
+  // Search for self. Don't create second instance
   chrome.tabs.query({
     currentWindow: true,
     url: chrome.extension.getURL('') + '*'
   }, function (tabs) {
     if (tabs.length) {
-      console.log(tabs);
       chrome.tabs.update(parseInt(tabs[0].id), {'active':true});
     } else {
       chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')});

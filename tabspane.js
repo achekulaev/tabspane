@@ -14,7 +14,8 @@ chrome.extension.onMessage.addListener(function(request, sender, response) {
     return false;
   }
   switch (request.command) {
-    case 'refresh': //refresh the whole pane
+    //refresh the whole pane
+    case 'refresh':
       chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
         refreshPane(paneData.tabs);
       });
@@ -131,7 +132,6 @@ function renderTab(tab) {
   };
 
   function tabCloseButtonAction() {
-    console.log(targetId);
     chrome.tabs.remove(targetId, function() {
       $(button).css({'display':'none','left':0,'top':0});
     });
@@ -185,47 +185,56 @@ function activateTab(tabId) {
 // but as I needed it right now(!) I wrote this quick hack. Search for tab with Cmd+F
 // then hit Esc - text remains selected. Press enter to activate that tab
 //--------- Temporary decision BEGIN.
-var tabThumbHighlighted = null; //the div.tabThumb which has text selected
-var escapeState = false;
+(function(window){
+  var tabHighlighted = null; //the div.tabThumb which has text selected
+  var escapeState = false;
 
-// Timer to watch selection. (Cmd+F , type text, hit Esc)
-var selectionWatch = setInterval(function(){
-  var selection = window.getSelection().focusNode;
-  if (selection != null && tabThumbHighlighted != $(selection).parents('.tabThumb')) {
-    $(tabThumbHighlighted).removeClass('tabHighlighted');
-    tabThumbHighlighted = $(selection).parents('.tabThumb');
-    tabThumbHighlighted.addClass('tabHighlighted');
-  } else {
-    $(tabThumbHighlighted).removeClass('tabHighlighted');
-    tabThumbHighlighted = null;
-  }
-},200);
-
-$(document).keypress(function(event) {
-  if (event.which == 13 && tabThumbHighlighted) {
-    var tabId = tabThumbHighlighted[0].id.replace(/tabThumb/, '');
-    if (tabId) {
-      activateTab(tabId);
+  // Timer to watch selection. (Cmd+F , type text, hit Esc)
+  var selectionWatch = setInterval(function(){
+    var selection = window.getSelection().focusNode;
+    // only change something when selection is present and it's a new selection
+    if (selection != null && tabHighlighted != $(selection).parents('.tabThumb')) {
+      $(tabHighlighted).removeClass('tabHighlighted');
+      tabHighlighted = $(selection).parents('.tabThumb');
+      tabHighlighted.addClass('tabHighlighted');
+    } else {
+      // nothing selected or some text outside tabsPane selected
+      $(tabHighlighted).removeClass('tabHighlighted');
+      tabHighlighted = null;
     }
-  }
-});
+  },200);
 
-//Clear selection on second escape press only
-//other key reset escapeState
-$(document).keyup(function(event){
-  if (event.keyCode == 27 && tabThumbHighlighted) {
-    if (escapeState) {
-      window.getSelection().removeAllRanges();
-      $('.tabDescription').each(function() {
-        //return line back after page find was performed
-        this.scrollLeft = 0;
-      });
+  $(document).keypress(function(event) {
+    if (tabHighlighted && event.which == 13) {
+      var tabId = tabHighlighted[0].id.replace(/tabThumb/, '');
+      if (tabId) {
+        activateTab(tabId);
+        clearSelection();
+      }
     }
-    escapeState = !escapeState;
+  });
+
+  //Clear selection on second escape press only
+  //other key reset escapeState
+  $(document).keyup(function(event){
+    if (tabHighlighted && event.keyCode == 27) {
+      if (escapeState) {
+        clearSelection();
+      }
+      escapeState = !escapeState;
+    }
+    if (event.keyCode != 27) {
+      escapeState = false;
+    }
+  });
+
+  function clearSelection() {
+    window.getSelection().removeAllRanges();
+    $('.tabDescription').each(function() {
+      //return line scrolling back after page find was performed
+      this.scrollLeft = 0;
+    });
   }
-  if (event.keyCode != 27) {
-    escapeState = false;
-  }
-});
+})(window);
 //---------- Temporary decision END
 

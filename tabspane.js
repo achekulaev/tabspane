@@ -129,9 +129,13 @@ function renderTab(tab) {
       var tabThumb = $('#tabThumb' + tabId);
       if (tabThumb) {
         clearTimeout(hideTimeout);
+        var offset = $(tabThumb).find('.tabCapture').offset();
         $(button)
-          .offset($(tabThumb).find('.tabCapture').offset())
-          .css({'display':'block'});
+          .css({
+            'display':'block',
+            top: (offset.top - 12) + 'px',
+            left: (offset.left - 12) + 'px'
+          });
       }
     } else {
       hideTimeout = setTimeout(function () { $(button).css({'display':'none','left':0,'top':0}); }, 50);

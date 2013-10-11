@@ -36,7 +36,7 @@ $(window).resize(function(){ adjustLayout() });
  * @param tabs
  */
 function adjustLayout() {
-  var tabOuterWidth = 350; //see tabspane.css/.tabOuter width
+  var tabOuterWidth = 350; //see tabspane.css .tabOuter width
   var width = parseInt($('body').css('width'));
   var columns = Math.floor(width / tabOuterWidth);
   $('#tabsPane').css({
@@ -138,13 +138,13 @@ function renderTab(tab) {
           });
       }
     } else {
-      hideTimeout = setTimeout(function () { $(button).css({'display':'none','left':0,'top':0}); }, 50);
+      hideTimeout = setTimeout(function () { $(button).css({'display':'none'}); }, 50);
     }
   };
 
   function tabCloseButtonAction() {
     chrome.tabs.remove(targetId, function() {
-      $(button).css({'display':'none','left':0,'top':0});
+      $(button).css({'display':'none'});
     });
   }
 

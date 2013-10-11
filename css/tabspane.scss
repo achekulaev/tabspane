@@ -1,27 +1,31 @@
-@import url(../fonts/Open_Sans/OpenSans.css);
+@import "../fonts/Open_Sans/OpenSans.css";
+
 body {
   margin: 0;
   background: #c5c5c5 url("../img/bg.jpg") fixed;
-  min-width: 400px; }
+  min-width: 400px;
+}
 
 #tabsPane {
   padding-top: 20px;
-  margin: 0 auto;
-  /* matters when width is set tabspane.js:adjustLayout() */
+  margin: 0 auto; /* matters when width is set tabspane.js:adjustLayout() */
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
   color: #222;
-  text-shadow: 0px 1px 0 #dbdbdb; }
-  #tabsPane.osx {
+  text-shadow: 0px 1px 0 #dbdbdb;
+  &.osx {
     font-family: 'Lucida Grande', sans-serif;
-    font-size: 14px; }
+    font-size: 14px;
+  }
+}
 
 .tabOuter {
   width: 350px;
   display: inline-block;
   margin-bottom: 5em;
   min-width: 333px;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 .tabCapture {
   display: block;
@@ -30,35 +34,45 @@ body {
   padding: 1px;
   margin: 4px auto;
   border-radius: 5px;
-  background: radial-gradient(white 7%, #111111 10%, transparent 40%), linear-gradient(45deg, white 5%, #111111 10%, transparent 10%, transparent 90%, white 95%); }
-  .tabThumb.tabHighlighted .tabCapture, .tabThumb:hover .tabCapture {
+  background:
+    radial-gradient(#fff 7%, #111 10%, transparent 40%),
+    linear-gradient(45deg, #fff 5%, #111 10%, transparent 10%, transparent 90%, #fff 95%);
+
+  .tabThumb.tabHighlighted &,
+  .tabThumb:hover & {
     margin: 0 auto;
     border: 4px solid #3496f7;
-    border-radius: 5px; }
-  .tabThumb.tabHighlighted .tabCapture {
-    border: 4px solid #e59707; }
+    border-radius: 5px;
+  }
+  .tabThumb.tabHighlighted & {
+    border: 4px solid #e59707;
+  }
+}
 
 .tabFooter {
   width: 283px;
   margin: 0 auto;
-  padding-top: 0.5em; }
+  padding-top: 0.5em;
+}
 
 .tabIcon {
   width: 16px;
   height: 16px;
   float: left;
   margin: 0 3px 0 4px;
-  border: 0; }
+  border: 0;
+}
 
 .tabDescription {
   width: 260px;
   white-space: nowrap;
   overflow: hidden;
   /* not using ellipsis because it truncates text */
-  -webkit-mask-image: -webkit-linear-gradient(left, black 85%, rgba(0, 0, 0, 0) 100%); }
+  -webkit-mask-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 1) 85%, rgba(0, 0, 0, 0) 100%);
+}
 
 .tabCloseButton {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 0; }
+  top: 0; left: 0;
+}

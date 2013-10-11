@@ -1,5 +1,4 @@
 ver 0.0.5
-* use scss for styles
 + handle tabs one by one. do not reload whole pane each time
 + capture generation on tab reload event (unless this tab was reloaded at past 5 seconds, to prevent overgeneration when redirects are happening)
 + group by opener http://developer.chrome.com/extensions/webNavigation.html#event-onCreatedNavigationTarget

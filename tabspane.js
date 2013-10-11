@@ -24,6 +24,25 @@ chrome.extension.onMessage.addListener(function(request, sender, response) {
   }
 });
 
+//Layout handling
+adjustLayout();
+$(window).resize(function(){ adjustLayout() });
+
+/*** End runtime ***/
+
+/**
+ *
+ * @param tabs
+ */
+function adjustLayout() {
+  var tabOuterWidth = 350; //see tabspane.css/.tabOuter width
+  var width = parseInt($('body').css('width'));
+  var columns = Math.floor(width / tabOuterWidth);
+  $('#tabsPane').css({
+    'width': (tabOuterWidth * (columns > 0 ? columns : 1))+'px'
+  });
+}
+
 /**
  * Refreshes the whole pane
  * @param tabs
@@ -42,7 +61,7 @@ function renderTab(tab) {
   var skeleton = $(
     '<div class="tabOuter">' + // I have to append this div, otherwise jQuery doesn't see .tabThumb until it's appended
       '<div class="tabThumb">' +
-        '<img class="tabCapture" />' +
+        '<div class="tabCapture" />' +
         '<div class="tabFooter">' +
           '<img class="tabIcon" />' +
           '<div class="tabDescription"></div>' +
@@ -50,21 +69,25 @@ function renderTab(tab) {
       '</div>' +
     '</div>');
 
-
   //capture
-  var greyPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAACXZwQWcAAAABAAAAAQDHlV/tAAAAC0lEQVQI12N4/x8AAuAB7zuPUI4AAAAASUVORK5CYII=';
   var captureImage = chrome.extension.getBackgroundPage().tabCaptures[tab.id];
-  skeleton.find('.tabCapture').attr('src', captureImage != null ? captureImage : greyPixel);
+  var tabCapture = skeleton.find('.tabCapture');
+  if (captureImage != null) {
+    tabCapture
+      .css({
+        'background': 'url(' + captureImage + ')',
+        'background-size': 'cover'
+      });
+  } else {
+    tabCapture.css('background', 'radial-gradient(#ddd, #fff 93%, #fff 18%)');
+  }
 
-  //icon
+  //icon & title
   skeleton.find('.tabIcon').attr('src', tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png'));
-
-  //title
-  skeleton.find('.tabDescription').html('<b>' + tab.title + '</b> (' + tab.url + ')');
+  skeleton.find('.tabDescription').html(tab.title + ' (' + tab.url + ')');
 
   //holder
-  skeleton
-    .find('.tabThumb')
+  skeleton.find('.tabThumb')
     .attr('id', 'tabThumb' + tab.id)
     .click(function() {
       activateTab(tab.id);

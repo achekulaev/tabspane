@@ -1,4 +1,6 @@
 ver 0.1
+* create tabs in proper place when created
+* tab move event
 + group by opener http://developer.chrome.com/extensions/webNavigation.html#event-onCreatedNavigationTarget
 
 var 0.1.1
@@ -28,6 +30,7 @@ Requirements: Rich javascript enables moving between groups, groups and tabs can
 + Make extension icon
 + Publish to Google Market
 + Documentation how to assign hotkey to call TabsPane
+* get rid of self in tabs list
 
 ----
 

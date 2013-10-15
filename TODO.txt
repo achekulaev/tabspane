@@ -1,5 +1,7 @@
-ver 0.1
+ver 0.0.9
 * tab attach/detach event
+
+ver 0.1
 * save tabpane's innerHTML into background page variable. restore into pane on load (performance)
 
 var 0.2

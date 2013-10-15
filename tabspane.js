@@ -60,7 +60,7 @@ function adjustLayout() {
   var width = parseInt($('body').css('width'));
   var columns = Math.floor(width / tabOuterWidth);
   $('#tabsPane').css({
-    'width': (tabOuterWidth * (columns > 0 ? columns : 1))+'px'
+    'width': (tabOuterWidth * (columns > 0 ? columns : 1)) + 'px'
   });
 }
 
@@ -71,12 +71,11 @@ Tabs = {
     $(tabArray).each(function(index, tab) {
       if (tabsPane.find('.tabOuter').length) {
         //TODO: if several tabs inserted then shift nth-child number on number of tabs already inserted this time
+        var target = tabsPane.find('.tabOuter:nth-child({0})'.format(tab.index > 0 ? tab.index : 1));
         if (tab.index == 0) {
-          //user ends up here when new window opene from dragged out tab
-          var target = tabsPane.find('.tabOuter:nth-child(' + parseInt(1) + ')');
+          //user ends up here when new window opened from dragged out tab
           Tabs.render(tab).insertBefore(target);
         } else {
-          var target = tabsPane.find('.tabOuter:nth-child(' + parseInt(tab.index) + ')');
           Tabs.render(tab).insertAfter(target);
         }
       } else {
@@ -92,11 +91,11 @@ Tabs = {
         switch (key) {
           case 'status':
             if (changeInfo.status == 'complete') {
-              $(tabThumb).find('.tabDescription').html(tab.title + ' (' + tab.url + ')');
+              $(tabThumb).find('.tabDescription').html('{0} ({1})'.format(tab.title, tab.url));
             }
             break;
           case 'url':
-            $(tabThumb).find('.tabDescription').html(tab.title + ' (' + tab.url + ')');
+            $(tabThumb).find('.tabDescription').html('{0} ({1})'.format(tab.title, tab.url));
             break;
           case 'favIconUrl':
             $(tabThumb).find('.tabIcon').attr('src', changeInfo.favIconUrl);
@@ -108,12 +107,12 @@ Tabs = {
             });
             break;
           case 'indexFwd':
-            var target = tabsPane.find('.tabOuter:nth-child(' + (parseInt(changeInfo.indexFwd) + 1) + ')');
+            var target = tabsPane.find('.tabOuter:nth-child({0})'.format(changeInfo.indexFwd + 1));
             console.log($(target));
             tabThumb.parent(null).insertAfter(target);
             break;
           case 'indexBkwd':
-            var target = tabsPane.find('.tabOuter:nth-child(' + parseInt(changeInfo.indexBkwd > 0 ? changeInfo.indexBkwd : 1) + ')');
+            var target = tabsPane.find('.tabOuter:nth-child({0})'.format(changeInfo.indexBkwd > 0 ? changeInfo.indexBkwd : 1));
             console.log($(target));
             if (changeInfo.indexBkwd > 0) {
               tabThumb.parent(null).insertAfter(target);
@@ -163,7 +162,7 @@ Tabs = {
     //icon & title
     var favIconUrl = tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png');
     skeleton.find('.tabIcon').attr('src', favIconUrl);
-    skeleton.find('.tabDescription').html(tab.title + ' (' + tab.url + ')');
+    skeleton.find('.tabDescription').html('{0} ({1})'.format(tab.title, tab.url));
 
     //capture
     var captureImage = chrome.extension.getBackgroundPage().tabCaptures[tab.id];
@@ -171,13 +170,13 @@ Tabs = {
     if (captureImage != null) {
       tabCapture
         .css({
-          'background': 'url(' + captureImage + ')',
+          'background': 'url({0})'.format(captureImage),
           'background-size': 'cover'
         });
     } else {
       // default tab capture image
       tabCapture.css({
-        'background-image': 'url(' + favIconUrl + '), radial-gradient(#ddd, #fff 93%, #fff 18%)',
+        'background-image': 'url({0}), radial-gradient(#ddd, #fff 93%, #fff 18%)'.format(favIconUrl),
         'background-repeat': 'no-repeat, repeat',
         'background-position': 'center center',
         'background-size': '32px 32px, cover'
@@ -254,6 +253,11 @@ Tabs = {
 
 
 /*** Helper functions ***/
+
+/**
+ * sprintf-like functionality
+ * replaces {0}, {1}... in a string with arguments passed to a function
+ */
 if (!String.prototype.format) {
   String.prototype.format = function() {
     var args = arguments;

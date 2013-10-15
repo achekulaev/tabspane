@@ -1,11 +1,12 @@
-var tabsPane = jQuery('#tabsPane');
+var tabsPane = $('#tabsPane');
 if (navigator.platform == 'MacIntel') {
   tabsPane.addClass('osx');
 }
 
 //Initial pane load
 chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
-  refreshPane(paneData.tabs);
+  Tabs.clear();
+  Tabs.append(paneData.tabs);
 });
 
 // Messages handling
@@ -21,13 +22,18 @@ chrome.extension.onMessage.addListener(function(request, sender, response) {
       });
       break;
     // create or update a tab
-    // syntax {command:tabAppend, changeInfo: changeInfo Object, tab: Tab Object}
+    // syntax {command:tabUpdate, changeInfo: changeInfo Object, tab: Tab Object}
     case 'tabUpdate':
       if (Tabs.exists(request.tab.id)) {
+        console.log('updating tab', request.tab.id, request.changeInfo);
         Tabs.update(request.changeInfo, request.tab);
       } else {
-        Tabs.append($(request.tab));
+        console.log('creating', request.tab);
+        Tabs.append(request.tab);
       }
+      break;
+    case 'tabCaptureUpdate':
+      Tabs.update(request.changeInfo, request.tab);
       break;
     // remove tab(s)
     // syntax {command:tabRemove, tabIdArray:[ array of tab ids ]}
@@ -37,6 +43,7 @@ chrome.extension.onMessage.addListener(function(request, sender, response) {
     default:
       return false;
   }
+  return null;
 });
 
 //Layout handling
@@ -46,8 +53,7 @@ $(window).resize(function(){ adjustLayout() });
 /*** End runtime ***/
 
 /**
- *
- * @param tabs
+ * Adjust tabspane width according to window width
  */
 function adjustLayout() {
   var tabOuterWidth = 350; //see tabspane.css .tabOuter width
@@ -61,8 +67,21 @@ function adjustLayout() {
 Tabs = {
 
   append: function(tabArray) {
-    $(tabArray).each(function(index, item) {
-      renderTab(item).appendTo(tabsPane);
+    // tabArray supposed to be ordered by tab index in the window (!)
+    $(tabArray).each(function(index, tab) {
+      if (tabsPane.find('.tabOuter').length) {
+        //TODO: if several tabs inserted then shift nth-child number on number of tabs already inserted this time
+        if (tab.index == 0) {
+          //user ends up here when new window opene from dragged out tab
+          var target = tabsPane.find('.tabOuter:nth-child(' + parseInt(1) + ')');
+          Tabs.render(tab).insertBefore(target);
+        } else {
+          var target = tabsPane.find('.tabOuter:nth-child(' + parseInt(tab.index) + ')');
+          Tabs.render(tab).insertAfter(target);
+        }
+      } else {
+        Tabs.render(tab).appendTo(tabsPane);
+      }
     });
   },
 
@@ -72,11 +91,15 @@ Tabs = {
       $.each(changeInfo, function(key, value){
         switch (key) {
           case 'status':
+            if (changeInfo.status == 'complete') {
+              $(tabThumb).find('.tabDescription').html(tab.title + ' (' + tab.url + ')');
+            }
             break;
           case 'url':
-            $('.tabDescription', tabThumb).html(tab.title + ' (' + tab.url + ')')
+            $(tabThumb).find('.tabDescription').html(tab.title + ' (' + tab.url + ')');
             break;
           case 'favIconUrl':
+            $(tabThumb).find('.tabIcon').attr('src', changeInfo.favIconUrl);
             break;
           case 'capture':
             $(tabThumb).find('.tabCapture').css({
@@ -84,10 +107,27 @@ Tabs = {
               'background-size': 'cover'
             });
             break;
+          case 'indexFwd':
+            var target = tabsPane.find('.tabOuter:nth-child(' + (parseInt(changeInfo.indexFwd) + 1) + ')');
+            console.log($(target));
+            tabThumb.parent(null).insertAfter(target);
+            break;
+          case 'indexBkwd':
+            var target = tabsPane.find('.tabOuter:nth-child(' + parseInt(changeInfo.indexBkwd > 0 ? changeInfo.indexBkwd : 1) + ')');
+            console.log($(target));
+            if (changeInfo.indexBkwd > 0) {
+              tabThumb.parent(null).insertAfter(target);
+            } else {
+              tabThumb.parent(null).insertBefore(target);
+            }
+
+            break;
           default:
             break;
         }
       });
+    } else {
+      console.log('Something went wrong: tab.id is null during update')
     }
   },
 
@@ -98,72 +138,74 @@ Tabs = {
   },
 
   exists: function(tabId) {
-    return $('#tabThumb' + tabId) != null;
-  }
+    return $('#tabThumb' + tabId).length;
+  },
 
-}
+  clear: function() {
+    tabsPane.html('');
+  },
 
-/**
- * Refreshes the whole pane
- * @param tabs
- */
-function refreshPane(tabs) {
-	tabsPane.html('');
-	for (var i in tabs) {
-    renderTab(tabs[i]).appendTo(tabsPane);
-	}
-}
-
-/**
- * Renders single tab representation
- */
-function renderTab(tab) {
-  var skeleton = $(
-    '<div class="tabOuter">' + // I have to append this div, otherwise jQuery doesn't see .tabThumb until it's appended
-      '<div class="tabThumb">' +
-        '<div class="tabCapture" />' +
-        '<div class="tabFooter">' +
-          '<img class="tabIcon" />' +
-          '<div class="tabDescription"></div>' +
+  /**
+   * Renders single tab representation
+   */
+  render: function(tab) {
+    var skeleton = $(
+      '<div class="tabOuter">' + // I have to append this div, otherwise jQuery doesn't see .tabThumb until it's appended
+        '<div class="tabThumb">' +
+          '<div class="tabCapture" />' +
+          '<div class="tabFooter">' +
+            '<img class="tabIcon" />' +
+            '<div class="tabDescription"></div>' +
+          '</div>' +
         '</div>' +
-      '</div>' +
-    '</div>');
+      '</div>');
 
-  //icon & title
-  var favIconUrl = tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png');
-  skeleton.find('.tabIcon').attr('src', favIconUrl);
-  skeleton.find('.tabDescription').html(tab.title + ' (' + tab.url + ')');
+    //icon & title
+    var favIconUrl = tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png');
+    skeleton.find('.tabIcon').attr('src', favIconUrl);
+    skeleton.find('.tabDescription').html(tab.title + ' (' + tab.url + ')');
 
-  //capture
-  var captureImage = chrome.extension.getBackgroundPage().tabCaptures[tab.id];
-  var tabCapture = skeleton.find('.tabCapture');
-  if (captureImage != null) {
-    tabCapture
-      .css({
-        'background': 'url(' + captureImage + ')',
-        'background-size': 'cover'
+    //capture
+    var captureImage = chrome.extension.getBackgroundPage().tabCaptures[tab.id];
+    var tabCapture = skeleton.find('.tabCapture');
+    if (captureImage != null) {
+      tabCapture
+        .css({
+          'background': 'url(' + captureImage + ')',
+          'background-size': 'cover'
+        });
+    } else {
+      // default tab capture image
+      tabCapture.css({
+        'background-image': 'url(' + favIconUrl + '), radial-gradient(#ddd, #fff 93%, #fff 18%)',
+        'background-repeat': 'no-repeat, repeat',
+        'background-position': 'center center',
+        'background-size': '32px 32px, cover'
       });
-  } else {
-    // default tab capture image
-    tabCapture.css({
-      'background-image': 'url(' + favIconUrl + '), radial-gradient(#ddd, #fff 93%, #fff 18%)',
-      'background-repeat': 'no-repeat, repeat',
-      'background-position': 'center center',
-      'background-size': '32px 32px, cover'
-    });
+    }
+
+    //holder
+    skeleton.find('.tabThumb')
+      .attr('id', 'tabThumb' + tab.id)
+      .click(function() {
+        Tabs.activate(tab.id);
+      })
+      .mouseenter(function() { tabCloseButton(tab.id); })
+      .mouseleave(function() { tabCloseButton(null); });
+
+    return skeleton;
+  },
+
+  /**
+   * Activates a tab. Used in onclick events
+   * @param tabId
+   */
+  activate: function(tabId) {
+    if (tabId != null) {
+      chrome.tabs.update(parseInt(tabId), {'active':true});
+    }
   }
-
-  //holder
-  skeleton.find('.tabThumb')
-    .attr('id', 'tabThumb' + tab.id)
-    .click(function() {
-      activateTab(tab.id);
-    })
-    .mouseenter(function() { tabCloseButton(tab.id); })
-    .mouseleave(function() { tabCloseButton(null); });
-
-	return skeleton;
-}
+};
 
 /**
  * Tab close button. Single instance
@@ -210,14 +252,18 @@ function renderTab(tab) {
   window.tabCloseButton = tabCloseButton;
 })(window);
 
-/**
- * Activates a tab. Used on click events
- * @param tabId
- */
-function activateTab(tabId) {
-  if (tabId != null) {
-    chrome.tabs.update(parseInt(tabId), {'active':true});
-  }
+
+/*** Helper functions ***/
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) {
+      return typeof args[number] != 'undefined'
+        ? args[number]
+        : match
+        ;
+    });
+  };
 }
 
 //  "commands": {
@@ -278,7 +324,7 @@ function activateTab(tabId) {
     if (tabHighlighted && event.which == 13) {
       var tabId = tabHighlighted[0].id.replace(/tabThumb/, '');
       if (tabId) {
-        activateTab(tabId);
+        Tabs.activate(tabId);
         clearSelection();
       }
     }

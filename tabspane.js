@@ -59,7 +59,7 @@ function adjustLayout() {
   var tabOuterWidth = 350; //see tabspane.css .tabOuter width
   var width = parseInt($('body').css('width'));
   var columns = Math.floor(width / tabOuterWidth);
-  $('#tabsPane').css({
+  tabsPane.css({
     'width': (tabOuterWidth * (columns > 0 ? columns : 1)) + 'px'
   });
 }
@@ -131,8 +131,8 @@ Tabs = {
   },
 
   remove: function(tabIdArray) {
-    $(tabIdArray).each(function(index, item){
-      $('#tabThumb' + item).parent(null).remove();
+    $(tabIdArray).each(function(index, tabId){
+      $('#tabThumb' + tabId).parent(null).remove();
     });
   },
 

@@ -138,6 +138,37 @@ chrome.tabs.onAttached.addListener(function(tabId, attachInfo) {
   });
 });
 
+/*** Omnibox ***/
+
+chrome.omnibox.onInputStarted.addListener(
+  function (){
+    chrome.tabs.query({
+      "currentWindow": true
+    }, function(tabs){
+      currentWindowTabs = tabs;
+    });
+  }
+);
+
+chrome.omnibox.onInputChanged.addListener(
+  function (text, suggest){
+    var tabsSuggest = [];
+    $.each(chrome.extension.getBackgroundPage().currentWindowTabs,
+      function (index, tab) {
+        if (tab.title.match(text) || tab.url.match(text)) {
+          tabsSuggest.push({content: tab.id+"", description: tab.title});
+        }
+      });
+    suggest(tabsSuggest);
+  }
+);
+
+chrome.omnibox.onInputEntered.addListener(
+  function (text){
+    chrome.tabs.update(parseInt(text), {'active':true});
+  }
+);
+
 /*** Helper functions ***/
 
 /**

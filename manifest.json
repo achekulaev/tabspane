@@ -12,8 +12,11 @@
   },
   "default_locale": "en",
   "background": {
-    "scripts": ["src/bg/background.js"],
+    "scripts": ["src/bg/background.js", "js/jquery/jquery.min.js"],
     "persistent": true
+  },
+  "omnibox": {
+    "keyword": "ls"
   },
   "options_page": "src/options_custom/index.html",
   "browser_action": {

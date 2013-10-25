@@ -176,14 +176,22 @@ chrome.omnibox.onInputEntered.addListener(
  */
 function takeScreenshot(tabId) {
   chrome.tabs.captureVisibleTab(null, captureFormat, function(dataUrl) {
-    resizeImage(dataUrl, 280, 210, function(resize) {
-      tabCaptures[tabId] = resize;
+//    resizeImage(dataUrl, 280, 210, function(resize) {
+//      tabCaptures[tabId] = resize;
+//      chrome.runtime.sendMessage(null, {
+//        'command': 'tabCaptureUpdate',
+//        'changeInfo': {'capture' : resize},
+//        'tab': { 'id': tabId } // faux tab object with id only
+//      });
+//    });
+
+      tabCaptures[tabId] = dataUrl;
       chrome.runtime.sendMessage(null, {
         'command': 'tabCaptureUpdate',
-        'changeInfo': {'capture' : resize},
+        'changeInfo': {'capture' : dataUrl},
         'tab': { 'id': tabId } // faux tab object with id only
       });
-    });
+
   });
 }
 

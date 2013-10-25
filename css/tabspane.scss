@@ -34,9 +34,6 @@ body {
   padding: 1px;
   margin: 4px auto;
   border-radius: 5px;
-  background:
-    radial-gradient(#fff 7%, #111 10%, transparent 40%),
-    linear-gradient(45deg, #fff 5%, #111 10%, transparent 10%, transparent 90%, #fff 95%);
 
   .tabThumb.tabHighlighted &,
   .tabThumb:hover & {

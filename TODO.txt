@@ -1,19 +1,14 @@
-ver 0.0.9
-* tab attach/detach event
++ Implement simple custom tab grouping
++ implement multiwindow support
+* simplify all that fancy events model to rescan tabs each time when it's needed???
 
-ver 0.1
-* save tabpane's innerHTML into background page variable. restore into pane on load (performance)
++ scroll tabPane view to last active tab
++ Search field hotkey
++ movement with arrows
 
-var 0.2
+
 + group by opener http://developer.chrome.com/extensions/webNavigation.html#event-onCreatedNavigationTarget
 
-var 0.3
-+ implement multiwindow support
-
-ver 0.4
-+ Implement simple custom tab grouping
-+ Tabs/Groups Filter/Search field with hotkey
-+ movement with arrows
 
 ver 0.5
 Requirements: Tabs are shown with screenshots, groupable, groups survive browser restart
@@ -21,24 +16,9 @@ Requirements: Tabs are shown with screenshots, groupable, groups survive browser
 * fix or use other icons for service tabs that reference icons from chrome://theme/
   Looks like chrome can't allow these urls (https://code.google.com/p/chromium/issues/detail?id=11854)
 
-ver 0.6
-+ Implement omnibox keyword http://developer.chrome.com/extensions/omnibox.html
-
-ver 0.7
-+ Offline tabs feature (save closed tabs in tabspane for reopen)
-+ scroll tabPane view to last active tab
-
 ver 1.0
-Date: December 2013
 Requirements: Rich javascript enables moving between groups, groups and tabs can be made persistent, tabs searchable
             including omnibox keyword. Bookmarks treated as persistent offline tabs, folders - as saved groups.
 + Make extension icon
 + Publish to Google Market
 + Documentation how to assign hotkey to call TabsPane
-* get rid of self in tabs list
-
-----
-
-Info
-
-Hotkeys: http://stackoverflow.com/questions/5498893/chrome-extension-how-to-get-key-events

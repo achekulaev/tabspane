@@ -1,6 +1,7 @@
 var body = $('body');
 var tabsPane = $('#tabsPane');
 var tabsSearch = $('#tabsSearch');
+var vars = { sortable: {} };
 if (navigator.platform == 'MacIntel') {
   body.addClass('osx');
 }
@@ -15,6 +16,8 @@ body.ready(function(){
     if (event.keyCode == 27) {
       this.value = '';
     }
+    // enable or disable sorting
+    tabsPane.sortable(this.value == '' ? 'enable' : 'disable');
     var search = this.value;
     searchTimeout = setTimeout(function() {
       Tabs.filter(search);
@@ -27,6 +30,29 @@ chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
   Tabs.clear();
   Tabs.append(paneData.tabs);
   $(tabsPane).fadeIn("fast");
+
+  //enable sortable list
+  tabsPane.sortable({
+    appendTo:document.body,
+    tolerance:'pointer',
+    delay: 50,
+    distance: 5
+  }).disableSelection();
+  tabsPane.sortable({
+    create: function (event, ui) {
+      console.log('sorting now');
+    },
+    start: function (event, ui) {
+      $('.tabCloseButton').css({visibility:'hidden'});
+    },
+    stop: function (event, ui) {
+      $('.tabCloseButton').css({visibility:'visible'});
+      var tabId = ui.item.find('.tabThumb')[0].id.replace('tabThumb','');
+      tabCloseButton(tabId);
+
+      chrome.tabs.move(parseInt(tabId), {'windowId':null, 'index': ui.item.index() });
+    }
+  });
 });
 
 // Messages handling
@@ -261,6 +287,7 @@ Tabs = {
   hideTimeout = null,
 
   tabCloseButton = function(tabId) {
+    //provide NULL to hide the button
     if (tabId != null) {
       targetId = tabId;
       var tabThumb = $('#tabThumb' + tabId);

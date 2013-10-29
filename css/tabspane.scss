@@ -28,7 +28,6 @@ body {
 }
 
 #tabsPane {
-  padding-top: 20px;
   margin: 0 auto; /* matters when width is set tabspane.js:adjustLayout() */
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
@@ -44,9 +43,12 @@ body {
 .tabOuter {
   width: 350px;
   display: inline-block;
-  margin-bottom: 5em;
   min-width: 333px;
   cursor: pointer;
+}
+
+.tabThumb {
+  padding-top: 3em;
 }
 
 .tabCapture {

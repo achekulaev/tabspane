@@ -18,7 +18,6 @@ chrome.extension.onMessage.addListener(
     if (!request.hasOwnProperty('command')) {
       return false;
     }
-    console.log(request.command);
     switch (request.command) {
       case 'tabList':
         // Async query for tabs
@@ -122,11 +121,9 @@ chrome.tabs.onDetached.addListener(function(tabId, detachInfo) {
 
 chrome.tabs.onAttached.addListener(function(tabId, attachInfo) {
   chrome.windows.get(attachInfo.newWindowId, {}, function(attachedToWindow) {
-    console.log('attached event', attachedToWindow);
     chrome.windows.getCurrent({'populate':true}, function(currentWindow) {
       if (attachedToWindow.id == currentWindow.id) {
         var newTab = currentWindow.tabs[attachInfo.newPosition];
-        console.log('yay new tab incoming!');
         chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'tab': newTab});
 
 //        if (newTab.url != 'chrome://newtab/' && newTab.id == activeTab) {

@@ -45,10 +45,8 @@ chrome.extension.onMessage.addListener(function(request, sender, response) {
     // syntax {command:tabUpdate, changeInfo: changeInfo Object, tab: Tab Object}
     case 'tabUpdate':
       if (Tabs.exists(request.tab.id)) {
-        console.log('updating tab', request.tab.id, request.changeInfo);
         Tabs.update(request.changeInfo, request.tab);
       } else {
-        console.log('creating', request.tab);
         Tabs.append(request.tab);
       }
       break;
@@ -128,12 +126,10 @@ Tabs = {
             break;
           case 'indexFwd':
             var target = tabsPane.find('.tabOuter:nth-child({0})'.format(changeInfo.indexFwd + 1));
-            console.log($(target));
             tabThumb.parent(null).insertAfter(target);
             break;
           case 'indexBkwd':
             var target = tabsPane.find('.tabOuter:nth-child({0})'.format(changeInfo.indexBkwd > 0 ? changeInfo.indexBkwd : 1));
-            console.log($(target));
             if (changeInfo.indexBkwd > 0) {
               tabThumb.parent(null).insertAfter(target);
             } else {

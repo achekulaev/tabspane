@@ -4,6 +4,24 @@ body {
   background: #c5c5c5 url("../img/bg.jpg") fixed;
   min-width: 400px; }
 
+#tabsSearch {
+  display: block;
+  width: 40em;
+  height: 1.5em;
+  margin: 20px auto;
+  padding: 0px 10px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  outline: none;
+  /* get rid of webkit outline */ }
+  body.osx #tabsSearch {
+    font-family: 'Lucida Grande', sans-serif;
+    font-size: 14px; }
+  #tabsSearch:focus {
+    border: 1px solid #BBB989; }
+
 #tabsPane {
   padding-top: 20px;
   margin: 0 auto;
@@ -11,8 +29,9 @@ body {
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
   color: #222;
-  text-shadow: 0px 1px 0 #dbdbdb; }
-  #tabsPane.osx {
+  text-shadow: 0px 1px 0 #dbdbdb;
+  display: none; }
+  body.osx #tabsPane {
     font-family: 'Lucida Grande', sans-serif;
     font-size: 14px; }
 

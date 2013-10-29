@@ -6,6 +6,27 @@ body {
   min-width: 400px;
 }
 
+#tabsSearch {
+  display: block;
+  width: 40em;
+  height: 1.5em;
+  margin: 20px auto;
+  padding: 0px 10px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  outline: none; /* get rid of webkit outline */
+
+  body.osx & {
+    font-family: 'Lucida Grande', sans-serif;
+    font-size: 14px;
+  }
+  &:focus {
+    border: 1px solid #BBB989;
+  }
+}
+
 #tabsPane {
   padding-top: 20px;
   margin: 0 auto; /* matters when width is set tabspane.js:adjustLayout() */
@@ -13,7 +34,8 @@ body {
   font-size: 12px;
   color: #222;
   text-shadow: 0px 1px 0 #dbdbdb;
-  &.osx {
+  display:none;
+  body.osx & {
     font-family: 'Lucida Grande', sans-serif;
     font-size: 14px;
   }

@@ -1,12 +1,32 @@
+var body = $('body');
 var tabsPane = $('#tabsPane');
+var tabsSearch = $('#tabsSearch');
 if (navigator.platform == 'MacIntel') {
-  tabsPane.addClass('osx');
+  body.addClass('osx');
 }
+
+//Search field events
+body.ready(function(){
+  var searchTimeout;
+  $(tabsSearch).focus();
+  $(tabsSearch).on('keyup', function(event) {
+    clearTimeout(searchTimeout);
+    //clear textbox on Esc being pressed
+    if (event.keyCode == 27) {
+      this.value = '';
+    }
+    var search = this.value;
+    searchTimeout = setTimeout(function() {
+      Tabs.filter(search);
+    } ,200);
+  });
+});
 
 //Initial pane load
 chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
   Tabs.clear();
   Tabs.append(paneData.tabs);
+  $(tabsPane).fadeIn("fast");
 });
 
 // Messages handling
@@ -203,6 +223,27 @@ Tabs = {
     if (tabId != null) {
       chrome.tabs.update(parseInt(tabId), {'active':true});
     }
+  },
+  /**
+   * filters tab by a search string
+   * @param search
+   */
+  filter: function(search) {
+    var matches;
+
+    $('.tabOuter').each(function(index, item) {
+      if (search != '') {
+        if ($(this).find('.tabDescription').text().toLowerCase().match(search) == null) {
+          $(this).css({display:'none'});
+        } else {
+          $(this).css({display:'inline-block'});
+        }
+      } else {
+        //empty search. all tabs
+        $(this).css({display:'inline-block'});
+      }
+
+    });
   }
 };
 
@@ -269,37 +310,6 @@ if (!String.prototype.format) {
     });
   };
 }
-
-//  "commands": {
-//    "_execute_browser_action": {
-//      "suggested_key": {
-//        "default": "Ctrl+Shift+E",
-//        "mac": "Command+Shift+E"
-//      }
-//    }
-//  },
-//
-//chrome.commands.onCommand.addListener(function(command){
-//  switch (command) {
-//    case "activate":
-//      chrome.tabs.query({
-//        currentWindow: true,
-//        url: chrome.extension.getURL('') + '*'
-//      }, function (tabs) {
-//        if (tabs.length) {
-//          //
-//        } else {
-//          chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')});
-//        }
-//      });
-//      break;
-//    default:
-//      return false;
-//  }
-//});
-
-
-
 
 // I wanted to search for tab name or url but it's not time to write that functionality
 // but as I needed it right now(!) I wrote this quick hack. Search for tab with Cmd+F

@@ -23,9 +23,6 @@
     "default_icon": "icons/icon19.png",
     "default_title": "browser action demo"
   },
-  "chrome_url_overrides": {
-    "newtab": "override.html"
-  },
   "permissions": [
     "tabs",
     "unlimitedStorage",

@@ -23,6 +23,9 @@ body.ready(function(){
       Tabs.filter(search);
     } ,200);
   });
+  shortcut.add("Tab", function() {
+    $(tabsSearch).focus();
+  });
 });
 
 //Initial pane load

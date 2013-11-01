@@ -1,7 +1,5 @@
 var body = $('body');
 var tabsPane = $('#tabsPane');
-var tabsSearch = $('#tabsSearch');
-var vars = { sortable: {} };
 if (navigator.platform == 'MacIntel') {
   body.addClass('osx');
 }
@@ -49,6 +47,7 @@ $.widget('tabspane.tabfilter', {
       case 'filter':
         if (value != this.options.filter) {
           this.options[ key ] = value;
+          this.element.val(value);
           this._update();
         }
         break;

@@ -36,12 +36,10 @@ chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
 
   //enable sortable list
   tabsPane.sortable({
-    appendTo:document.body,
     tolerance:'pointer',
     delay: 50,
-    distance: 5
-  }).disableSelection();
-  tabsPane.sortable({
+    distance: 5,
+    scroll: false,
     create: function (event, ui) {
       console.log('sorting now');
     },
@@ -55,7 +53,8 @@ chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
 
       chrome.tabs.move(parseInt(tabId), {'windowId':null, 'index': ui.item.index() });
     }
-  });
+  }).disableSelection();
+
 });
 
 // Messages handling

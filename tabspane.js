@@ -8,24 +8,60 @@ if (navigator.platform == 'MacIntel') {
 
 //Search field events
 body.ready(function(){
-  var searchTimeout;
-  $(tabsSearch).focus();
-  $(tabsSearch).on('keyup', function(event) {
-    clearTimeout(searchTimeout);
-    //clear textbox on Esc being pressed
-    if (event.keyCode == 27) {
-      this.value = '';
+  $('#tabsSearch').tabfilter({
+    shortcut: 'Tab',
+    onChanged: function(event, data) {
+      tabsPane.sortable(data.filter == '' ? 'enable' : 'disable');
+      Tabs.filter(data.filter);
     }
-    // enable or disable sorting
-    tabsPane.sortable(this.value == '' ? 'enable' : 'disable');
-    var search = this.value;
-    searchTimeout = setTimeout(function() {
-      Tabs.filter(search);
-    } ,200);
   });
-  shortcut.add("Tab", function() {
-    $(tabsSearch).focus().select();
-  });
+});
+
+$.widget('tabspane.tabfilter', {
+
+  options: {
+    placeholder: 'Search for title or url',
+    filter: '',
+    timeout: null,
+    shortcut: ''
+  },
+
+  _create: function() {
+    this.element.attr('placeholder', this.options.placeholder);
+    var widget = this;
+    this.element.on('keyup', function(event) {
+      clearTimeout(widget.options.timeout);
+      //clear widget if Esc was pressed
+      if (event.keyCode == 27) {
+        this.value = '';
+      }
+      widget.options.timeout = setTimeout(widget._setOption.bind(widget, 'filter', this.value), 200);
+    });
+    this.element.focus().select();
+    //add shortcut
+    shortcut.add(this.options.shortcut, function(){
+      widget.element.focus().select();
+    });
+  },
+
+  _setOption: function(key, value) {
+    switch (key) {
+      case 'filter':
+        if (value != this.options.filter) {
+          this.options[ key ] = value;
+          this._update();
+        }
+        break;
+      default:
+        this.options[ key ] = value;
+        break;
+    }
+  },
+
+  _update: function() {
+    this._trigger("onChanged", null, {filter: this.options.filter});
+  }
+
 });
 
 //Initial pane load
@@ -36,9 +72,9 @@ chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
     delay: 50,
     distance: 5,
     scroll: false,
-    create: function (event, ui) {
-      console.log('sorting now');
-    },
+//    create: function (event, ui) {
+//      console.log('sorting now');
+//    },
     start: function (event, ui) {
       $('.tabCloseButton').css({visibility:'hidden'});
     },

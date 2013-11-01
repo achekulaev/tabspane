@@ -224,7 +224,7 @@ Tabs = {
     }
     //set tabsPane icon
     if (tab.url.match(/^chrome-extension:\/\/.*tabspane\.html$/)) {
-      skeleton.find('.tabIcon').attr('src', chrome.extension.getURL('icons/icon48.png'));
+      skeleton.find('.tabIcon').attr('src', chrome.extension.getURL('icons/icon16.png'));
       skeleton.find('.tabDescription').html('Tabs Pane');
     } else {
       skeleton.find('.tabIcon').attr('src', favIconUrl);

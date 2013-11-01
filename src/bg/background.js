@@ -57,12 +57,7 @@ chrome.browserAction.onClicked.addListener(function (tab) {
  * On Tab activated event generate screenshot (capture)
  */
 chrome.tabs.onActivated.addListener(function(activeInfo) {
-  activeTab = activeInfo.tabId;
-  chrome.tabs.get(activeInfo.tabId, function(currentTab) {
-    if (currentTab.url != 'chrome://newtab/') {
-      takeScreenshot(activeInfo.tabId);
-    }
-  });
+  takeScreenshot(activeInfo.tabId);
 });
 
 /**
@@ -92,8 +87,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 });
 
 /**
- * When page is loaded in background while user types an address in a new tab
- * then Chrome fires onReplaced event rather than onUpdated
+ * When page is pre-loaded by Chrome in background process
+ * while user types an address in a tab's address bar
+ * then on return key pressed Chrome fires onReplaced event rather than onUpdated
  */
 chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
   //remove old tab
@@ -129,11 +125,6 @@ chrome.tabs.onAttached.addListener(function(tabId, attachInfo) {
       if (attachedToWindow.id == currentWindow.id) {
         var newTab = currentWindow.tabs[attachInfo.newPosition];
         chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'tab': newTab});
-
-//        if (newTab.url != 'chrome://newtab/' && newTab.id == activeTab) {
-//          //refresh capture if current tab finished loading
-//          takeScreenshot(tabId);
-//        }
       }
     });
   });

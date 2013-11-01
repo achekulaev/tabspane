@@ -143,7 +143,9 @@ Tabs = {
         switch (key) {
           case 'status':
             if (changeInfo.status == 'complete') {
-              $(tabThumb).find('.tabDescription').html('{0} ({1})'.format(tab.title, tab.url));
+              //TODO: cleanup later
+              if ($(tabThumb).find('.tabDescription').html() != 'Tabs Pane')
+                $(tabThumb).find('.tabDescription').html('{0} ({1})'.format(tab.title, tab.url));
             }
             break;
           case 'url':
@@ -212,8 +214,23 @@ Tabs = {
 
     //icon & title
     var favIconUrl = tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png');
-    skeleton.find('.tabIcon').attr('src', favIconUrl);
-    skeleton.find('.tabDescription').html('{0} ({1})'.format(tab.title, tab.url));
+    //set icons for 'service' chrome pages which don't allow extensions to use their icons
+    switch (favIconUrl) {
+      case 'chrome://theme/IDR_EXTENSIONS_FAVICON@2x':
+        favIconUrl = chrome.extension.getURL('img/IDR_EXTENSIONS_FAVICON.png');
+        break;
+      default:
+        break;
+    }
+    //set tabsPane icon
+    if (tab.url.match(/^chrome-extension:\/\/.*tabspane\.html$/)) {
+      skeleton.find('.tabIcon').attr('src', chrome.extension.getURL('icons/icon48.png'));
+      skeleton.find('.tabDescription').html('Tabs Pane');
+    } else {
+      skeleton.find('.tabIcon').attr('src', favIconUrl);
+      skeleton.find('.tabDescription').html('{0} ({1})'.format(tab.title, tab.url));
+    }
+
 
     //capture
     var captureImage = chrome.extension.getBackgroundPage().tabCaptures[tab.id];

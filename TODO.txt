@@ -1,5 +1,8 @@
-+ Implement simple custom tab grouping
 + implement multiwindow support
++ replace search field with custom dropdown with filtering feature
+http://jqueryui.com/autocomplete/#default
+http://stackoverflow.com/questions/3695184/jquery-autocomplete-highlighting
++ Implement simple custom tab grouping
 * simplify all that fancy events model to rescan tabs each time when it's needed???
 
 + scroll tabPane view to last active tab

@@ -2,8 +2,7 @@
 
 body {
   margin: 0;
-  background: #c5c5c5 url("../img/bg.jpg") fixed;
-  min-width: 400px;
+  background: #c5c5c5 url("../img/bg.jpg") ;
 }
 
 #tabsSearch {
@@ -28,7 +27,7 @@ body {
 }
 
 #tabsPane {
-  margin: 0 auto; /* matters when width is set tabspane.js:adjustLayout() */
+  margin: 0 auto 10em auto; /* matters when width is set tabspane.js:adjustLayout() */
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
   color: #222;

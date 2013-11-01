@@ -24,7 +24,7 @@ body.ready(function(){
     } ,200);
   });
   shortcut.add("Tab", function() {
-    $(tabsSearch).focus();
+    $(tabsSearch).focus().select();
   });
 });
 

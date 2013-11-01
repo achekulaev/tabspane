@@ -22,8 +22,9 @@ body {
     border: 1px solid #BBB989; }
 
 #tabsPane {
-  margin: 0 auto 10em auto;
+  margin: 0 auto;
   /* matters when width is set tabspane.js:adjustLayout() */
+  padding: 0 0 10em 0;
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
   color: #222;

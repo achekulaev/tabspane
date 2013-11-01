@@ -75,8 +75,12 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
   chrome.runtime.sendMessage(null, {'command': 'tabRemove', 'tabIdArray': [tabId]});
 });
 
+chrome.tabs.onCreated.addListener(function(tab) {
+  chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'changeInfo': {}, 'tab': tab});
+});
+
 /**
- * On tab created/reloaded append a tab
+ * On tab reloaded append a tab
  */
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'changeInfo': changeInfo, 'tab': tab});

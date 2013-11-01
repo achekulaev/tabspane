@@ -30,10 +30,6 @@ body.ready(function(){
 
 //Initial pane load
 chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
-  Tabs.clear();
-  Tabs.append(paneData.tabs);
-  $(tabsPane).fadeIn("fast");
-
   //enable sortable list
   tabsPane.sortable({
     tolerance:'pointer',
@@ -55,6 +51,10 @@ chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
     }
   }).disableSelection();
 
+  Tabs.clear();
+  Tabs.append(paneData.tabs);
+  $(tabsPane).fadeIn("fast");
+
 });
 
 // Messages handling
@@ -63,13 +63,18 @@ chrome.extension.onMessage.addListener(function(request, sender, response) {
     return false;
   }
   switch (request.command) {
-    // refresh the whole pane
+    // refresh the pane
     case 'refresh':
       chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
         refreshPane(paneData.tabs);
       });
       break;
-    // create or update a tab
+    // create a tab
+    // syntax {tab: Tab Object}
+    case 'tabCreate':
+      Tabs.append(request.tab);
+      break;
+    // update a tab
     // syntax {command:tabUpdate, changeInfo: changeInfo Object, tab: Tab Object}
     case 'tabUpdate':
       if (Tabs.exists(request.tab.id)) {
@@ -128,6 +133,7 @@ Tabs = {
         Tabs.render(tab).appendTo(tabsPane);
       }
     });
+    tabsPane.sortable('refresh');
   },
 
   update: function(changeInfo, tab) {
@@ -155,6 +161,7 @@ Tabs = {
           case 'indexFwd':
             var target = tabsPane.find('.tabOuter:nth-child({0})'.format(changeInfo.indexFwd + 1));
             tabThumb.parent(null).insertAfter(target);
+            tabsPane.sortable('refresh');
             break;
           case 'indexBkwd':
             var target = tabsPane.find('.tabOuter:nth-child({0})'.format(changeInfo.indexBkwd > 0 ? changeInfo.indexBkwd : 1));
@@ -163,7 +170,7 @@ Tabs = {
             } else {
               tabThumb.parent(null).insertBefore(target);
             }
-
+            tabsPane.sortable('refresh');
             break;
           default:
             break;
@@ -309,7 +316,7 @@ Tabs = {
   };
 
   function tabCloseButtonAction() {
-    chrome.tabs.remove(targetId, function() {
+    chrome.tabs.remove(parseInt(targetId), function() {
       $(button).css({'display':'none'});
     });
   }

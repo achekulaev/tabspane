@@ -9,6 +9,7 @@ body.ready(function(){
   $('#tabsSearch').tabfilter({
     shortcut: 'Tab',
     onChanged: function(event, data) {
+      Tabs.unHighlightAll();
       tabsPane.sortable(data.filter == '' ? 'enable' : 'disable');
       Tabs.filter(data.filter);
     }
@@ -126,6 +127,9 @@ chrome.extension.onMessage.addListener(function(request, sender, response) {
     case 'tabRemove':
       Tabs.remove($(request.tabIdArray));
       break;
+    case 'highlight':
+      Tabs.highlight(request.tab.id);
+      break;
     default:
       return false;
   }
@@ -151,6 +155,7 @@ function adjustLayout() {
 }
 
 Tabs = {
+  highlighted: {},
 
   append: function(tabArray) {
     // tabArray supposed to be ordered by tab index in the window (!)
@@ -305,6 +310,26 @@ Tabs = {
   activate: function(tabId) {
     if (tabId != null) {
       chrome.tabs.update(parseInt(tabId), {'active':true});
+    }
+  },
+  /**
+   * Highlight a tab
+   * @param tabId
+   */
+  highlight: function(tabId) {
+    this.unHighlightAll();
+    var tab = $('#tabThumb' + tabId),
+        offset = tab.offset();
+    if (tab != []) {
+      this.highlighted[tabId] = '#tabThumb' + tabId;
+      window.scrollTo(offset.left, offset.top);
+      tab.addClass('tabHighlighted');
+    }
+  },
+  unHighlightAll: function() {
+    for (var i in this.highlighted) {
+      $(this.highlighted[i]).removeClass('tabHighlighted');
+      delete this.highlighted[i];
     }
   },
   /**

@@ -47,9 +47,12 @@ chrome.browserAction.onClicked.addListener(function (tab) {
     currentWindow: true,
     url: chrome.extension.getURL('') + '*'
   }, function (tabs) {
-    tabs.length
-      ? chrome.tabs.update(parseInt(tabs[0].id), {'active':true})
-      : chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')});
+    if (tabs.length) {
+      chrome.runtime.sendMessage(null, {command: 'highlight', tab: {id: activeTab}});
+      chrome.tabs.update(parseInt(tabs[0].id), {'active': true});
+    } else {
+      chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')});
+    }
   });
 });
 
@@ -57,6 +60,7 @@ chrome.browserAction.onClicked.addListener(function (tab) {
  * On Tab activated event generate screenshot (capture)
  */
 chrome.tabs.onActivated.addListener(function(activeInfo) {
+  activeTab = activeInfo.tabId;
   takeScreenshot(activeInfo.tabId);
 });
 

@@ -70,12 +70,16 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
   chrome.runtime.sendMessage(null, {'command': 'tabRemove', 'tabIdArray': [tabId]});
 });
 
+/**
+ * On tab created append a tab
+ */
+
 chrome.tabs.onCreated.addListener(function(tab) {
   chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'changeInfo': {}, 'tab': tab});
 });
 
 /**
- * On tab reloaded append a tab
+ * On tab reloaded
  */
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'changeInfo': changeInfo, 'tab': tab});
@@ -88,7 +92,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
 /**
  * When page is pre-loaded by Chrome in background process
- * while user types an address in a tab's address bar
+ * while user types an address in chrome's address bar
  * then on return key pressed Chrome fires onReplaced event rather than onUpdated
  */
 chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
@@ -112,6 +116,9 @@ chrome.tabs.onMoved.addListener(function(tabId, moveInfo){
   });
 });
 
+/**
+ * Tab detached from current window
+ */
 chrome.tabs.onDetached.addListener(function(tabId, detachInfo) {
   if (tabCaptures[tabId] != null) {
     tabCaptures[tabId] = null;
@@ -119,6 +126,9 @@ chrome.tabs.onDetached.addListener(function(tabId, detachInfo) {
   chrome.runtime.sendMessage(null, {'command': 'tabRemove', 'tabIdArray': [tabId]});
 });
 
+/**
+ * Tab attached to current window
+ */
 chrome.tabs.onAttached.addListener(function(tabId, attachInfo) {
   chrome.windows.get(attachInfo.newWindowId, {}, function(attachedToWindow) {
     chrome.windows.getCurrent({'populate':true}, function(currentWindow) {

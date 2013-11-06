@@ -5,7 +5,7 @@ if (navigator.platform == 'MacIntel') {
 }
 
 //Search field events
-body.ready(function(){
+$(function(){
   $('#tabsSearch').tabfilter({
     shortcut: 'Tab',
     onChanged: function(event, data) {
@@ -29,12 +29,11 @@ $.widget('tabspane.tabfilter', {
     this.element.attr('placeholder', this.options.placeholder);
     var widget = this;
     this.element.on('keyup', function(event) {
-      clearTimeout(widget.options.timeout);
       //clear widget if Esc was pressed
       if (event.keyCode == 27) {
         this.value = '';
       }
-      widget.options.timeout = setTimeout(widget._setOption.bind(widget, 'filter', this.value), 200);
+      widget._setOption('filter', this.value);
     });
     this.element.focus().select();
     //add shortcut

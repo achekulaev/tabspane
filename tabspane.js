@@ -17,6 +17,9 @@ $(function(){
       Tabs.filter(data.filter);
     }
   });
+  shortcut.add('Enter', function () {
+    Tabs.activateHighlighted();
+  });
 });
 
 $.widget('tabspane.tabfilter', {
@@ -314,17 +317,24 @@ Tabs = {
       chrome.tabs.update(parseInt(tabId), {'active':true});
     }
   },
+  activateHighlighted: function() {
+    for (var i in this.highlighted) {
+      Tabs.activate(i);
+      $('#tabsSearch').tabfilter({filter: ''});
+      return;
+    }
+  },
   /**
    * Highlight a tab
    * @param tabId
    */
-  highlight: function(tabId) {
+  highlight: function(tabId, noScroll) {
     this.unHighlightAll();
     var tab = $('#tabThumb' + tabId),
         offset = tab.offset();
     if (tab != []) {
       this.highlighted[tabId] = '#tabThumb' + tabId;
-      window.scrollTo(offset.left, offset.top);
+      if (noScroll !== true) window.scrollTo(offset.left, offset.top);
       tab.addClass('tabHighlighted');
     }
   },
@@ -339,13 +349,20 @@ Tabs = {
    * @param search
    */
   filter: function(search) {
-    var matches;
+    var highlighted = false;
 
     $('.tabOuter').each(function(index, item) {
       if (search != '') {
         if ($(this).find('.tabDescription').text().toLowerCase().match(search) == null) {
           $(this).css({display:'none'});
         } else {
+          if (!highlighted) {
+            var
+              tabId = $(this).find('.tabThumb')[0].id.replace('tabThumb', ''),
+              noScroll = true;
+            Tabs.highlight(tabId, noScroll);
+            highlighted = true;
+          }
           $(this).css({display:'inline-block'});
         }
       } else {

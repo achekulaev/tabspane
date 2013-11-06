@@ -4,6 +4,9 @@ if (navigator.platform == 'MacIntel') {
   body.addClass('osx');
 }
 
+//prevent "jumping" because of scrollBar appear/disappear
+body.css({width: body.width()});
+
 //Search field events
 $(function(){
   $('#tabsSearch').tabfilter({

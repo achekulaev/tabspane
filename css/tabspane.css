@@ -1,7 +1,8 @@
 @import url(../fonts/Open_Sans/OpenSans.css);
 body {
   margin: 0;
-  background: #c5c5c5 url("../img/bg.jpg"); }
+  background: #c5c5c5 url("../img/bg.jpg");
+  overflow-x: hidden; }
 
 #tabsSearch {
   display: block;

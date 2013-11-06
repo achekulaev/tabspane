@@ -5,7 +5,6 @@ http://stackoverflow.com/questions/3695184/jquery-autocomplete-highlighting
 + Implement simple custom tab grouping
 * simplify all that fancy events model to rescan tabs each time when it's needed???
 * when favicon is updated update screenshot if screenshot is absent and thumb only has favicon
-* fix layout "jumping" by setting body.width to such without scrollBar width
 
 + scroll tabPane view to last active tab
 + Search field hotkey

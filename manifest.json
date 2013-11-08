@@ -25,6 +25,7 @@
   },
   "permissions": [
     "tabs",
+    "history",
     "unlimitedStorage",
     "<all_urls>"
   ],

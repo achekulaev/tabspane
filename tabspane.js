@@ -1,5 +1,6 @@
-var body = $('body');
-var tabsPane = $('#tabsPane');
+var body = $('body'),
+    tabsPane = $('#tabsPane'),
+    historyPane = $;
 if (navigator.platform == 'MacIntel') {
   body.addClass('osx');
 }
@@ -7,9 +8,10 @@ if (navigator.platform == 'MacIntel') {
 //prevent "jumping" because of scrollBar appear/disappear
 body.css({width: body.width()});
 
-//Search field events
+//Search field
 $(function(){
-  $('#tabsSearch').tabfilter({
+  $('#tabsSearch').tabFilter({
+    filter: '',
     shortcut: 'Tab',
     onChanged: function(event, data) {
       Tabs.unHighlightAll();
@@ -20,9 +22,10 @@ $(function(){
   shortcut.add('Enter', function () {
     Tabs.activateHighlighted();
   });
+  historyPane = $('#historyPane').historyPane();
 });
 
-$.widget('tabspane.tabfilter', {
+$.widget('tabsPane.tabFilter', {
 
   options: {
     placeholder: 'Search for title or url',
@@ -69,34 +72,56 @@ $.widget('tabspane.tabfilter', {
 
 });
 
-//Initial pane load
-chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
-  //enable sortable list
-  tabsPane.sortable({
-    tolerance:'pointer',
-    delay: 50,
-    distance: 5,
-    scroll: false,
-//    create: function (event, ui) {
-//      console.log('sorting now');
-//    },
-    start: function (event, ui) {
-      $('.tabCloseButton').css({visibility:'hidden'});
-    },
-    stop: function (event, ui) {
-      $('.tabCloseButton').css({visibility:'visible'});
-      var tabId = ui.item.find('.tabThumb')[0].id.replace('tabThumb','');
-      tabCloseButton(tabId);
+$.widget('tabsPane.historyPane', {
+  options : {
+    filter : ''
+  },
+  list : $('<div/>'),
+  _create: function() {
+    this._hide();
+    this.element.html('<h1>History</h1><div id="historyList"></div>');
+    this.list = $('#historyList', this.element);
+  },
+  _setOption: function(key, value) {
+    switch (key) {
+      case 'filter':
+        if (value != '') {
+          this.options.filter = value;
+          var startTime = new Date();
+          var widget = this;
 
-      chrome.tabs.move(parseInt(tabId), {'windowId':null, 'index': ui.item.index() });
+          this.list.html('');
+          startTime.setFullYear(startTime.getFullYear(), startTime.getMonth() - 3);
+
+          chrome.history.search(
+            {
+              text: value,
+              startTime: startTime.getTime(),
+              endTime: Date.now(),
+              maxResults: 10
+            }, function(items) {
+              $.each(items, function(index, item) {
+                widget.list.append('<div><a href="{0}">{1}</a></div>'.format(item.url, item.title));
+              });
+            });
+          this._show();
+        } else {
+          this._hide();
+          this.list.html('');
+        }
+        break;
+      default:
+        break
     }
-  }).disableSelection();
-
-  Tabs.clear();
-  Tabs.append(paneData.tabs);
-  $(tabsPane).fadeIn("fast");
-
+  },
+  _hide: function() {
+    this.element.css({display:'none'});
+  },
+  _show: function() {
+    this.element.css({display:'block'});
+  }
 });
+
 
 // Messages handling
 chrome.extension.onMessage.addListener(function(request, sender, response) {
@@ -139,6 +164,35 @@ chrome.extension.onMessage.addListener(function(request, sender, response) {
       return false;
   }
   return null;
+});
+
+//Initial pane load
+chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
+  //enable sortable list
+  tabsPane.sortable({
+    tolerance:'pointer',
+    delay: 50,
+    distance: 5,
+    scroll: false,
+//    create: function (event, ui) {
+//      console.log('sorting now');
+//    },
+    start: function (event, ui) {
+      $('.tabCloseButton').css({visibility:'hidden'});
+    },
+    stop: function (event, ui) {
+      $('.tabCloseButton').css({visibility:'visible'});
+      var tabId = ui.item.find('.tabThumb')[0].id.replace('tabThumb','');
+      tabCloseButton(tabId);
+
+      chrome.tabs.move(parseInt(tabId), {'windowId':null, 'index': ui.item.index() });
+    }
+  }).disableSelection();
+
+  Tabs.clear();
+  Tabs.append(paneData.tabs);
+  $(tabsPane).fadeIn("fast");
+
 });
 
 //Layout handling
@@ -349,9 +403,11 @@ Tabs = {
    * @param search
    */
   filter: function(search) {
-    var highlighted = false;
+    var highlighted = false, maxOffset = tabsPane.offset().top;
 
     $('.tabOuter').each(function(index, item) {
+      var top = $(this).offset().top;
+      maxOffset = top > maxOffset ? top : maxOffset;
       if (search != '') {
         if ($(this).find('.tabDescription').text().toLowerCase().match(search) == null) {
           $(this).css({display:'none'});
@@ -370,6 +426,11 @@ Tabs = {
         $(this).css({display:'inline-block'});
       }
 
+    });
+    $('.tabOuter').promise().done(function() {
+      if (maxOffset <= tabsPane.offset().top) {
+        historyPane.historyPane({'filter':search});
+      }
     });
   }
 };

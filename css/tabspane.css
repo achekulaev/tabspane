@@ -4,6 +4,8 @@ body {
   padding: 0 0 10em 0;
   background: #c5c5c5 url("../img/bg.jpg");
   overflow-x: hidden; }
+  body.osx {
+    font-family: 'Lucida Grande', sans-serif; }
 
 #tabsSearch {
   display: block;
@@ -82,3 +84,16 @@ body {
   cursor: pointer;
   top: 0;
   left: 0; }
+
+#historyPane {
+  margin: 0 auto;
+  overflow-x: hidden;
+  -webkit-mask-image: -webkit-linear-gradient(left, black 85%, rgba(0, 0, 0, 0) 100%); }
+  #historyPane .historyItem {
+    white-space: nowrap; }
+    #historyPane .historyItem a {
+      text-decoration: none; }
+    #historyPane .historyItem a, #historyPane .historyItem a:visited {
+      color: black; }
+    #historyPane .historyItem a.grey, #historyPane .historyItem a.grey:visited {
+      color: #808080; }

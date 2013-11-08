@@ -5,6 +5,10 @@ body {
   padding: 0 0 10em 0;
   background: #c5c5c5 url("../img/bg.jpg") ;
   overflow-x: hidden;
+
+  &.osx {
+    font-family: 'Lucida Grande', sans-serif;
+  }
 }
 
 #tabsSearch {
@@ -97,4 +101,23 @@ body {
   position: absolute;
   cursor: pointer;
   top: 0; left: 0;
+}
+
+#historyPane {
+  margin: 0 auto;
+  overflow-x: hidden;
+  -webkit-mask-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 1) 85%, rgba(0, 0, 0, 0) 100%);
+
+  .historyItem {
+    white-space: nowrap;
+    a {
+      text-decoration: none;
+    }
+    a, a:visited {
+      color: black;
+    }
+    a.grey, a.grey:visited {
+      color: #808080;
+    }
+  }
 }

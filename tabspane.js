@@ -1,6 +1,6 @@
 var body = $('body'),
     tabsPane = $('#tabsPane'),
-    historyPane = $;
+    historyPane = $('#historyPane');
 if (navigator.platform == 'MacIntel') {
   body.addClass('osx');
 }
@@ -89,6 +89,7 @@ $.widget('tabsPane.historyPane', {
           this.options.filter = value;
           var startTime = new Date();
           var widget = this;
+          var itemSkeleton = '<div class="historyItem"><a href="{0}">{1}</a>&nbsp;<a href="{0}" class="grey">({2})</a></div>';
 
           this.list.html('');
           startTime.setFullYear(startTime.getFullYear(), startTime.getMonth() - 3);
@@ -101,7 +102,9 @@ $.widget('tabsPane.historyPane', {
               maxResults: 10
             }, function(items) {
               $.each(items, function(index, item) {
-                widget.list.append('<div><a href="{0}">{1}</a></div>'.format(item.url, item.title));
+                widget.list.append(
+                  itemSkeleton.format(item.url, item.title ? item.title : '[No Title]', item.url)
+                );
               });
             });
           this._show();
@@ -205,19 +208,21 @@ $(window).resize(function(){ adjustLayout() });
  * Adjust tabspane width according to window width
  */
 function adjustLayout() {
-  var tabOuterWidth = 350; //see tabspane.css .tabOuter width
-  var width = parseInt($('body').css('width'));
-  var columns = Math.floor(width / tabOuterWidth);
-  tabsPane.css({
-    'width': (tabOuterWidth * (columns > 0 ? columns : 1)) + 'px'
-  });
+  var tabOuterWidth = 350, //see tabspane.css .tabOuter width
+      width = parseInt($('body').css('width')),
+      columns = Math.floor(width / tabOuterWidth),
+      css = {
+        'width': (tabOuterWidth * (columns > 0 ? columns : 1)) + 'px'
+      };
+  tabsPane.css(css);
+  historyPane.css(css);
 }
 
 Tabs = {
   highlighted: {},
 
   append: function(tabArray) {
-    // tabArray supposed to be ordered by tab index in the window (!)
+    // tabArray is supposed to be ordered by tab index in the window (!)
     $(tabArray).each(function(index, tab) {
       if (tabsPane.find('.tabOuter').length) {
         //TODO: if several tabs inserted then shift nth-child number on number of tabs already inserted this time
@@ -428,8 +433,11 @@ Tabs = {
 
     });
     $('.tabOuter').promise().done(function() {
+      //Show history pane only when there is 1 or 0 rows of tab results
       if (maxOffset <= tabsPane.offset().top) {
-        historyPane.historyPane({'filter':search});
+        historyPane.historyPane({'filter': search});
+      } else {
+        historyPane.historyPane({'filter': ''});
       }
     });
   }

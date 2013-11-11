@@ -60,6 +60,7 @@ $.widget('tabsPane.tabFilter', {
 
   _clear: function() {
     this._setOption('filter', '');
+    this.element.focus();
   },
   _toggleClear: function(hide) {
     this.clearButton.css({display: hide === true ? 'none' : 'block'});

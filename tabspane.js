@@ -8,7 +8,7 @@ if (navigator.platform == 'MacIntel') {
 //prevent "jumping" because of scrollBar appear/disappear
 body.css({width: body.width()});
 
-//Search field
+//Search field and history pane
 $(function(){
   $('#tabsSearch').tabFilter({
     filter: '',

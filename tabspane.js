@@ -34,6 +34,8 @@ $.widget('tabsPane.tabFilter', {
     shortcut: ''
   },
 
+  clearButton: null,
+
   _create: function() {
     this.element.attr('placeholder', this.options.placeholder);
     var widget = this;
@@ -49,6 +51,16 @@ $.widget('tabsPane.tabFilter', {
     shortcut.add(this.options.shortcut, function(){
       widget.element.focus().select();
     });
+    //clear button
+    var offset = this.element.offset();
+    this.clearButton = $('<img src="img/clear.png" />').appendTo('body');
+    this.clearButton
+      .css({ position: 'absolute', display: 'none', cursor: 'pointer' })
+      .offset({
+        top: offset.top + ( Math.ceil((this.element.height() - 16)/2) ), /* button height of 16px hardcoded. change if required */
+        left: offset.left + this.element.width()
+      })
+      .on('click', function() { widget._clear(); });
   },
 
   _setOption: function(key, value) {
@@ -59,6 +71,7 @@ $.widget('tabsPane.tabFilter', {
           this.element.val(value);
           this._update();
         }
+        this._toggleClear(value == '');
         break;
       default:
         this.options[ key ] = value;
@@ -68,8 +81,14 @@ $.widget('tabsPane.tabFilter', {
 
   _update: function() {
     this._trigger("onChanged", null, {filter: this.options.filter});
-  }
+  },
 
+  _clear: function() {
+    this._setOption('filter', '');
+  },
+  _toggleClear: function(hide) {
+    this.clearButton.css({display: hide === true ? 'none' : 'block'});
+  }
 });
 
 $.widget('tabsPane.historyPane', {

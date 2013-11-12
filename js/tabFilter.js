@@ -45,7 +45,7 @@ $.widget('tabsPane.tabFilter', {
           this.element.val(value);
           this._update();
         }
-        this._toggleClear(value == '');
+        this._toggleClearButton(value == '');
         break;
       default:
         this.options[ key ] = value;
@@ -61,7 +61,7 @@ $.widget('tabsPane.tabFilter', {
     this._setOption('filter', '');
     this.element.focus();
   },
-  _toggleClear: function(hide) {
+  _toggleClearButton: function(hide) {
     this.clearButton.css({display: hide === true ? 'none' : 'block'});
   }
 });

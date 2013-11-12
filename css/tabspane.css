@@ -2,28 +2,35 @@
 body {
   margin: 0;
   padding: 0 0 10em 0;
-  background: #c5c5c5 url("../img/bg.jpg");
+  background: #E5E5E5;
   overflow-x: hidden; }
   body.osx {
     font-family: 'Lucida Grande', sans-serif; }
+
+.appleHeader {
+  background-image: -webkit-linear-gradient(top, #e7e7e7 0%, #b8b8b8 100%);
+  padding: 20px 0;
+  border-bottom: 1px solid #696969;
+  border-top: 1px solid #f1f1f1; }
 
 #tabsSearch {
   display: block;
   width: 40em;
   height: 1.5em;
-  margin: 20px auto;
+  margin: 0 auto;
   padding: 0px 10px;
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
-  border: 1px solid transparent;
-  border-radius: 4px;
+  border: 1px solid #8d8d8d;
+  border-radius: 1em;
   outline: none;
   /* get rid of webkit outline */ }
   body.osx #tabsSearch {
     font-family: 'Lucida Grande', sans-serif;
     font-size: 14px; }
   #tabsSearch:focus {
-    border: 1px solid #BBB989; }
+    box-shadow: inset 0 0 3px 0 blue;
+    border: 1px solid #6397ca; }
 
 #tabsPane {
   margin: 0 auto;
@@ -31,7 +38,7 @@ body {
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
   color: #222;
-  text-shadow: 0px 1px 0 #dbdbdb;
+  text-shadow: 0px 1px 0px #e5e5ee;
   display: none; }
   body.osx #tabsPane {
     font-family: 'Lucida Grande', sans-serif;
@@ -51,14 +58,15 @@ body {
   width: 280px;
   height: 210px;
   padding: 1px;
-  margin: 4px auto;
-  border-radius: 5px; }
+  margin: 0 auto;
+  border-radius: 5px;
+  box-shadow: 0 0 3px 0 #222; }
   .tabThumb.tabHighlighted .tabCapture, .tabThumb:hover .tabCapture {
     margin: 0 auto;
-    border: 4px solid #3496f7;
+    box-shadow: 0 0 4px 2px #3496f7, inset 0 0 4px 2px #3496f7;
     border-radius: 5px; }
   .tabThumb.tabHighlighted .tabCapture {
-    border: 4px solid #e59707; }
+    border: 4px solid #3496f7; }
 
 .tabFooter {
   width: 283px;
@@ -88,6 +96,7 @@ body {
 #historyPane {
   margin: 0 auto;
   overflow-x: hidden;
+  background: #EDEDED;
   -webkit-mask-image: -webkit-linear-gradient(left, black 85%, rgba(0, 0, 0, 0) 100%); }
   body.osx #historyPane {
     font-family: 'Lucida Grande', sans-serif;

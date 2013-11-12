@@ -28,7 +28,6 @@ $.widget('tabsPane.tabFilter', {
     }
     //clear button
     var offset = this.element.offset();
-    this.clearButton = $('<img src="img/clear.png" />').appendTo('body');
     this.clearButton
       .css({ position: 'absolute', display: 'none', cursor: 'pointer' })
       .offset({

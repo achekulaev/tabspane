@@ -7,7 +7,7 @@ $.widget('tabsPane.tabFilter', {
     shortcut: ''
   },
 
-  clearButton: null,
+  clearButton: $('<img src="img/clear.png" />').appendTo('body'),
 
   _create: function() {
     this.element.attr('placeholder', this.options.placeholder);

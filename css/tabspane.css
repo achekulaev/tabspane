@@ -89,6 +89,13 @@ body {
   margin: 0 auto;
   overflow-x: hidden;
   -webkit-mask-image: -webkit-linear-gradient(left, black 85%, rgba(0, 0, 0, 0) 100%); }
+  body.osx #historyPane {
+    font-family: 'Lucida Grande', sans-serif;
+    font-size: 14px; }
+  #historyPane a, #historyPane img {
+    vertical-align: middle; }
+  #historyPane img {
+    margin-right: 0.3em; }
   #historyPane .historyItem {
     white-space: nowrap; }
     #historyPane .historyItem a {
@@ -97,3 +104,7 @@ body {
       color: black; }
     #historyPane .historyItem a.grey, #historyPane .historyItem a.grey:visited {
       color: #808080; }
+  #historyPane .historyItem:hover {
+    background: rgba(255, 255, 255, 0.3); }
+    #historyPane .historyItem:hover a {
+      text-decoration: underline; }

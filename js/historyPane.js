@@ -13,16 +13,21 @@ $.widget('tabsPane.historyPane', {
     this.list = $('#historyList', this.element);
   },
   _setOption: function(key, value) {
+    this.options[key] = value;
+
     switch (key) {
       case 'filter':
         if (value != '') {
-          this.options.filter = value;
           var startTime = new Date();
           var widget = this;
-          var itemSkeleton = '<div class="historyItem"><a href="{0}">{1}</a>&nbsp;<a href="{0}" class="grey">({2})</a></div>';
+          var itemSkeleton =
+            '<div class="historyItem">' +
+              '<img src="{2}" />' +
+              '<a href="{0}">{1}</a>&nbsp;&dash;&nbsp;<a href="{0}" class="grey">{0}</a>' +
+            '</div>';
 
-          this.list.html('');
-          startTime.setFullYear(startTime.getFullYear(), startTime.getMonth() - 3);
+          this._clear();
+          startTime.setFullYear(startTime.getFullYear(), startTime.getMonth() - 3); //TODO move 'time ago' to options
 
           chrome.history.search(
             {
@@ -30,17 +35,22 @@ $.widget('tabsPane.historyPane', {
               startTime: startTime.getTime(),
               endTime: Date.now(),
               maxResults: 10
-            }, function(items) {
+            },
+            function(items) {
               $.each(items, function(index, item) {
                 widget.list.append(
-                  itemSkeleton.format(item.url, item.title ? item.title : '[No Title]', item.url)
+                  itemSkeleton.format(
+                    item.url,
+                    item.title ? item.title : '[No Title]',
+                    'chrome://favicon/size/16@1x/' + item.url
+                  )
                 );
               });
             });
           this._show();
         } else {
           this._hide();
-          this.list.html('');
+          this._clear();
         }
         break;
       default:
@@ -52,5 +62,8 @@ $.widget('tabsPane.historyPane', {
   },
   _show: function() {
     this.element.css({display:'block'});
+  },
+  _clear: function() {
+    this.list.html('');
   }
 });

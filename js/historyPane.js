@@ -26,7 +26,6 @@ $.widget('tabsPane.historyPane', {
               '<a href="{0}">{1}</a>&nbsp;&dash;&nbsp;<a href="{0}" class="grey">{0}</a>' +
             '</div>';
 
-          this._clear();
           startTime.setFullYear(startTime.getFullYear(), startTime.getMonth() - 3); //TODO move 'time ago' to options
 
           chrome.history.search(
@@ -37,6 +36,7 @@ $.widget('tabsPane.historyPane', {
               maxResults: 10
             },
             function(items) {
+              widget._clear();
               $.each(items, function(index, item) {
                 widget.list.append(
                   itemSkeleton.format(

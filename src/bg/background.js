@@ -182,15 +182,6 @@ chrome.omnibox.onInputEntered.addListener(
  */
 function takeScreenshot(tabId) {
   chrome.tabs.captureVisibleTab(null, captureFormat, function(dataUrl) {
-//    resizeImage(dataUrl, 280, 210, function(resize) {
-//      tabCaptures[tabId] = resize;
-//      chrome.runtime.sendMessage(null, {
-//        'command': 'tabCaptureUpdate',
-//        'changeInfo': {'capture' : resize},
-//        'tab': { 'id': tabId } // faux tab object with id only
-//      });
-//    });
-
       tabCaptures[tabId] = dataUrl;
       chrome.runtime.sendMessage(null, {
         'command': 'tabCaptureUpdate',
@@ -199,43 +190,4 @@ function takeScreenshot(tabId) {
       });
 
   });
-}
-
-/**
- * Resizes image
- * @param src
- * @param width
- * @param height
- * @param callback
- * @returns {boolean}
- */
-function resizeImage(src, width, height, callback) {
-  if (width == null || height == null || callback == null) {
-    return false;
-  }
-  var img = new Image();
-
-  img.onload = function() {
-    var canvas = document.createElement('canvas');
-
-    var ratio = this.width / this.height;
-    if (this.height < this.width) {
-      //browser horizontal
-      canvas.height = height;
-      canvas.width = height * ratio;
-    } else {
-      //browser vertical
-      canvas.width = width;
-      canvas.height = width / ratio;
-    }
-
-    canvas.width *= 2;
-    canvas.height *= 2;
-    //TODO: crop invisible (due to different thumbnail and browser window ratios) part of image
-    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-
-    callback(canvas.toDataURL("image/png", 0.8));
-  };
-
-  img.src = src;
 }

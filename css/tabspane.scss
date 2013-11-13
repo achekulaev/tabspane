@@ -76,11 +76,11 @@ body {
   .tabThumb.tabHighlighted &,
   .tabThumb:hover & {
     margin: 0 auto;
-    box-shadow: 0 0 4px 2px #3496f7, inset 0 0 4px 2px #3496f7;
+    box-shadow: 0 0 2px 1px #1c55f8, inset 0 0 8px 1px #1c55f8;
     border-radius: 5px;
   }
   .tabThumb.tabHighlighted & {
-    border: 4px solid #3496f7;
+    box-shadow: 0 0 3px 2px #f8860c, inset 0 0 8px 2px #f8860c;
   }
 }
 

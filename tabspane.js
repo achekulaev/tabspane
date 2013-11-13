@@ -22,7 +22,14 @@ $(function(){
   shortcut.add('Enter', function () {
     Tabs.activateHighlighted();
   });
-  historyPane = $('#historyPane').historyPane();
+  historyPane = $('#historyPane').historyPane({
+    //TODO move "hide history when search is not active" to options
+    onFilter: function(event, data) {
+      $('#historyPane').parent().css({
+        display: data.filter == "" ? 'none' : 'block'
+      });
+    }
+  });
 });
 
 // Messages handling

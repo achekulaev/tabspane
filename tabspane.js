@@ -259,6 +259,7 @@ Tabs = {
       .attr('id', 'tabThumb' + tab.id)
       .click(function() {
         Tabs.activate(tab.id);
+        Tabs.unHighlightAll();
       })
       .mouseenter(function() { tabCloseButton(tab.id); })
       .mouseleave(function() { tabCloseButton(null); });
@@ -285,6 +286,7 @@ Tabs = {
   /**
    * Highlight a tab
    * @param tabId
+   * @param noScroll bool
    */
   highlight: function(tabId, noScroll) {
     this.unHighlightAll();
@@ -294,6 +296,12 @@ Tabs = {
       this.highlighted[tabId] = '#tabThumb' + tabId;
       if (noScroll !== true) window.scrollTo(offset.left, offset.top);
       tab.addClass('tabHighlighted');
+    }
+  },
+  unHighlight: function(tabId) {
+    if (this.highlighted[tabId]) {
+      $(this.highlighted[tabId]).removeClass('tabHighlighted');
+      delete this.highlighted[tabId];
     }
   },
   unHighlightAll: function() {
@@ -381,6 +389,7 @@ Tabs = {
 
   function tabCloseButtonAction() {
     chrome.tabs.remove(parseInt(targetId), function() {
+      Tabs.unHighlight(parseInt(targetId));
       $(button).css({'display':'none'});
     });
   }

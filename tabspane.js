@@ -155,7 +155,7 @@ Tabs = {
             $(tabThumb).find('.tabDescription').html('{0} ({1})'.format(tab.title, tab.url));
             break;
           case 'favIconUrl':
-            $(tabThumb).find('.tabIcon').attr('src', changeInfo.favIconUrl);
+            $(tabThumb).find('.tabIcon').attr('src', 'chrome://favicon/size/16@1x/' + changeInfo.favIconUrl);
             //TODO make some sort of function in Tabs to alter Tab info
             break;
           case 'capture':

@@ -2,7 +2,7 @@
 
 body {
   margin: 0;
-  padding: 0 0 10em 0;
+  padding: 0;
   background: #E5E5E5;
   overflow-x: hidden;
 
@@ -41,7 +41,8 @@ body {
 }
 
 #tabsPane {
-  margin: 0 auto; /* matters when width is set tabspane.js:adjustLayout() */
+  margin: 3em auto 0 auto; /* matters when width is set tabspane.js:adjustLayout() */
+
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
   color: #222;
@@ -58,10 +59,7 @@ body {
   display: inline-block;
   min-width: 333px;
   cursor: pointer;
-}
-
-.tabThumb {
-  padding-top: 3em;
+  margin-bottom: 3em;
 }
 
 .tabCapture {
@@ -113,14 +111,21 @@ body {
 }
 
 #historyPane {
-  margin: 0 auto;
+  margin: 1em auto;
   overflow-x: hidden;
-  background: #EDEDED;
   -webkit-mask-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 1) 85%, rgba(0, 0, 0, 0) 100%);
 
   body.osx & {
     font-family: 'Lucida Grande', sans-serif;
     font-size: 14px;
+  }
+
+  h1 {
+    font-size: 1.5em;
+    margin: 0 0.5em 0 0;
+    float: left;
+    height: 10em;
+    border-right: 1px solid #767676;
   }
 
   a, img {
@@ -132,6 +137,9 @@ body {
 
   .historyItem {
     white-space: nowrap;
+    height: 1.5em;
+    margin-left: 50px;
+
     a {
       text-decoration: none;
     }
@@ -144,10 +152,22 @@ body {
   }
 
   .historyItem:hover {
-    background: rgba(255, 255, 255, 0.3);
+
+    background: rgba(28, 85, 248, 0.2);
 
     a {
       text-decoration: underline;
     }
   }
+}
+
+.appleOddRow {
+  border-top: 1px solid #efefef;
+  border-bottom: 1px solid #cdcdcd;
+}
+
+.appleEvenRow {
+  background: #EDEDED;
+  border-top: 1px solid #f4f4f4;
+  border-bottom: 1px solid #d4d4d4;
 }

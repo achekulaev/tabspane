@@ -9,7 +9,7 @@ $.widget('tabsPane.historyPane', {
   list : $('<div/>'),
   _create: function() {
     this._hide();
-    this.element.html('<h1>History</h1><div id="historyList"></div>');
+    this.element.html('<h1><img src="chrome://favicon/size/16@2x/chrome://history/" /></h1><div id="historyList"></div>');
     this.list = $('#historyList', this.element);
   },
   _setOption: function(key, value) {

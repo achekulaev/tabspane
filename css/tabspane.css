@@ -1,7 +1,7 @@
 @import url(../fonts/Open_Sans/OpenSans.css);
 body {
   margin: 0;
-  padding: 0 0 10em 0;
+  padding: 0;
   background: #E5E5E5;
   overflow-x: hidden; }
   body.osx {
@@ -33,7 +33,7 @@ body {
     border: 1px solid #6397ca; }
 
 #tabsPane {
-  margin: 0 auto;
+  margin: 3em auto 0 auto;
   /* matters when width is set tabspane.js:adjustLayout() */
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
@@ -48,10 +48,8 @@ body {
   width: 350px;
   display: inline-block;
   min-width: 333px;
-  cursor: pointer; }
-
-.tabThumb {
-  padding-top: 3em; }
+  cursor: pointer;
+  margin-bottom: 3em; }
 
 .tabCapture {
   display: block;
@@ -94,19 +92,26 @@ body {
   left: 0; }
 
 #historyPane {
-  margin: 0 auto;
+  margin: 1em auto;
   overflow-x: hidden;
-  background: #EDEDED;
   -webkit-mask-image: -webkit-linear-gradient(left, black 85%, rgba(0, 0, 0, 0) 100%); }
   body.osx #historyPane {
     font-family: 'Lucida Grande', sans-serif;
     font-size: 14px; }
+  #historyPane h1 {
+    font-size: 1.5em;
+    margin: 0 0.5em 0 0;
+    float: left;
+    height: 10em;
+    border-right: 1px solid #767676; }
   #historyPane a, #historyPane img {
     vertical-align: middle; }
   #historyPane img {
     margin-right: 0.3em; }
   #historyPane .historyItem {
-    white-space: nowrap; }
+    white-space: nowrap;
+    height: 1.5em;
+    margin-left: 50px; }
     #historyPane .historyItem a {
       text-decoration: none; }
     #historyPane .historyItem a, #historyPane .historyItem a:visited {
@@ -114,6 +119,15 @@ body {
     #historyPane .historyItem a.grey, #historyPane .historyItem a.grey:visited {
       color: #808080; }
   #historyPane .historyItem:hover {
-    background: rgba(255, 255, 255, 0.3); }
+    background: rgba(28, 85, 248, 0.2); }
     #historyPane .historyItem:hover a {
       text-decoration: underline; }
+
+.appleOddRow {
+  border-top: 1px solid #efefef;
+  border-bottom: 1px solid #cdcdcd; }
+
+.appleEvenRow {
+  background: #EDEDED;
+  border-top: 1px solid #f4f4f4;
+  border-bottom: 1px solid #d4d4d4; }

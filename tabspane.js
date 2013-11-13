@@ -156,6 +156,7 @@ Tabs = {
             break;
           case 'favIconUrl':
             $(tabThumb).find('.tabIcon').attr('src', changeInfo.favIconUrl);
+            //TODO make some sort of function in Tabs to alter Tab info
             break;
           case 'capture':
             $(tabThumb).find('.tabCapture').css({
@@ -216,15 +217,11 @@ Tabs = {
       '</div>');
 
     //icon & title
-    var favIconUrl = tab.favIconUrl ? tab.favIconUrl : chrome.extension.getURL('img/tab.png');
-    //set icons for 'service' chrome pages which don't allow extensions to use their icons
-    switch (favIconUrl) {
-      case 'chrome://theme/IDR_EXTENSIONS_FAVICON@2x':
-        favIconUrl = chrome.extension.getURL('img/IDR_EXTENSIONS_FAVICON.png');
-        break;
-      default:
-        break;
-    }
+    var smallIcon = tab.favIconUrl ? "chrome://favicon/size/16@1x/" + tab.url : chrome.extension.getURL('img/tab.png');
+    var largeIcon = tab.favIconUrl ? "chrome://favicon/size/16@2x/" + tab.url : chrome.extension.getURL('img/tab.png');
+
+    var favIconUrl = smallIcon;
+
     //set tabsPane icon
     if (tab.url.match(/^chrome-extension:\/\/.*tabspane\.html$/)) {
       skeleton.find('.tabIcon').attr('src', chrome.extension.getURL('icons/icon16.png'));
@@ -247,7 +244,7 @@ Tabs = {
     } else {
       // default tab capture image
       tabCapture.css({
-        'background-image': 'url({0}), radial-gradient(#ddd, #fff 93%, #fff 18%)'.format(favIconUrl),
+        'background-image': 'url({0}), radial-gradient(#ddd, #fff 93%, #fff 18%)'.format(largeIcon),
         'background-repeat': 'no-repeat, repeat',
         'background-position': 'center center',
         'background-size': '32px 32px, cover'

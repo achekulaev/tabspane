@@ -13,6 +13,15 @@ body {
   border-bottom: 1px solid #696969;
   border-top: 1px solid #f1f1f1; }
 
+.appleOddRow {
+  border-top: 1px solid #efefef;
+  border-bottom: 1px solid #cdcdcd; }
+
+.appleEvenRow {
+  background: #EDEDED;
+  border-top: 1px solid #f4f4f4;
+  border-bottom: 1px solid #d4d4d4; }
+
 #tabsSearch {
   display: block;
   width: 40em;
@@ -122,12 +131,3 @@ body {
     background: rgba(28, 85, 248, 0.2); }
     #historyPane .historyItem:hover a {
       text-decoration: underline; }
-
-.appleOddRow {
-  border-top: 1px solid #efefef;
-  border-bottom: 1px solid #cdcdcd; }
-
-.appleEvenRow {
-  background: #EDEDED;
-  border-top: 1px solid #f4f4f4;
-  border-bottom: 1px solid #d4d4d4; }

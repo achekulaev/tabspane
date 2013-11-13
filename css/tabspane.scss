@@ -18,6 +18,17 @@ body {
   border-top: 1px solid #f1f1f1;
 }
 
+.appleOddRow {
+  border-top: 1px solid #efefef;
+  border-bottom: 1px solid #cdcdcd;
+}
+
+.appleEvenRow {
+  background: #EDEDED;
+  border-top: 1px solid #f4f4f4;
+  border-bottom: 1px solid #d4d4d4;
+}
+
 #tabsSearch {
   display: block;
   width: 40em;
@@ -161,13 +172,3 @@ body {
   }
 }
 
-.appleOddRow {
-  border-top: 1px solid #efefef;
-  border-bottom: 1px solid #cdcdcd;
-}
-
-.appleEvenRow {
-  background: #EDEDED;
-  border-top: 1px solid #f4f4f4;
-  border-bottom: 1px solid #d4d4d4;
-}

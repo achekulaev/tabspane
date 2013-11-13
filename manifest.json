@@ -25,7 +25,6 @@
   "permissions": [
     "tabs",
     "history",
-    "unlimitedStorage",
     "<all_urls>"
   ],
   "offline_enabled": true

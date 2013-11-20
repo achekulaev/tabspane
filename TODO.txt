@@ -1,4 +1,6 @@
 * remove current screenshot if tab gets redirected to another url
+* change hover and click from tabOuter to tabCapture + tabFooter
+
 + implement multiwindow support
 + replace search field with custom dropdown with filtering feature
 http://jqueryui.com/autocomplete/#default
@@ -24,6 +26,4 @@ Requirements: Tabs are shown with screenshots, groupable, groups survive browser
 ver 1.0
 Requirements: Rich javascript enables moving between groups, groups and tabs can be made persistent, tabs searchable
             including omnibox keyword. Bookmarks treated as persistent offline tabs, folders - as saved groups.
-+ Make extension icon
-+ Publish to Google Market
 + Documentation how to assign hotkey to call TabsPane

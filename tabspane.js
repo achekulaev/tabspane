@@ -252,7 +252,7 @@ Tabs = {
     } else {
       // default tab capture image
       tabCapture.css({
-        'background-image': 'url({0}), radial-gradient(#ddd, #fff 93%, #fff 18%)'.format(largeIcon),
+        'background-image': 'url("{0}"), radial-gradient(#ddd, #fff 93%, #fff 18%)'.format(largeIcon),
         'background-repeat': 'no-repeat, repeat',
         'background-position': 'center center',
         'background-size': '32px 32px, cover'

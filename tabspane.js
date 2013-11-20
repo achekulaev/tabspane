@@ -261,7 +261,8 @@ Tabs = {
 
     //holder
     skeleton.find('.tabThumb')
-      .attr('id', 'tabThumb' + tab.id)
+      .attr('id', 'tabThumb' + tab.id);
+    skeleton.find('.tabCapture')
       .click(function() {
         Tabs.activate(tab.id);
         Tabs.unHighlightAll();

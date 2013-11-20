@@ -74,7 +74,6 @@ body {
   width: 350px;
   display: inline-block;
   min-width: 333px;
-  cursor: pointer;
   margin-bottom: 3em;
 }
 
@@ -86,14 +85,14 @@ body {
   margin: 0 auto;
   border-radius: 5px;
   box-shadow: 0 0 3px 0 #222;
+  cursor: pointer;
 
-  .tabThumb.tabHighlighted &,
-  .tabThumb:hover & {
+  &:hover {
     margin: 0 auto;
     box-shadow: 0 0 2px 1px #1c55f8, inset 0 0 8px 1px #1c55f8;
-    border-radius: 5px;
   }
   .tabThumb.tabHighlighted & {
+    margin: 0 auto;
     box-shadow: 0 0 3px 2px #f8860c, inset 0 0 8px 2px #f8860c;
   }
 }

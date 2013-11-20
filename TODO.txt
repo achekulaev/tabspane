@@ -1,5 +1,4 @@
 * remove current screenshot if tab gets redirected to another url
-* change hover and click from tabOuter to tabCapture + tabFooter
 
 + implement multiwindow support
 + replace search field with custom dropdown with filtering feature

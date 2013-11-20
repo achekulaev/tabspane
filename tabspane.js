@@ -114,6 +114,7 @@ $(window).resize(function(){ adjustLayout() });
  * Adjust tabspane width according to window width
  */
 function adjustLayout() {
+  body.css({width: $(window).width()});
   var tabOuterWidth = 350, //see tabspane.css .tabOuter width
       width = parseInt($('body').css('width')),
       columns = Math.floor(width / tabOuterWidth),

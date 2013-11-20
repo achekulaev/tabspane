@@ -7,10 +7,14 @@ $.widget('tabsPane.tabFilter', {
     shortcut: ''
   },
 
-  clearButton: $('<img src="img/clear.png" />').appendTo('body'),
-  elementSize: {},
+  wrapper: $('<div></div>').css({ position: 'relative', display: 'inline-block' }).addClass('searchWrapper'),
+  clearButton: $('<img src="img/clear.png" />').css({ position: 'absolute', right: '1%', top: '15%' }),
 
   _create: function() {
+
+    this.element
+      .wrap(this.wrapper)
+      .before(this.clearButton);
     this.element.attr('placeholder', this.options.placeholder);
     var widget = this;
     this.element.on('keyup', function(event) {
@@ -30,32 +34,8 @@ $.widget('tabsPane.tabFilter', {
     //clear button
     var offset = this.element.offset();
     this.clearButton
-      .css({ position: 'absolute', display: 'none', cursor: 'pointer' })
-      .offset({
-        top: offset.top + ( Math.ceil((this.element.height() - 16)/2) ), /* button height of 16px hardcoded. change if required */
-        left: offset.left + this.element.width()
-      })
+      .css({ display: 'none', cursor: 'pointer' })
       .on('click', function() { widget._clear(); });
-
-    //handle resize
-    this.elementSize.height = this.element.height();
-    this.elementSize.width = this.element.width();
-    $(window).resize(function() {
-      //using window.resize is not universal but should be enough for this plugin
-      var
-        element = widget.element,
-        oldSize = widget.elementSize,
-        newSize = { height: element.height(), width: element.width() };
-      if (newSize != oldSize) {
-        var offset = element.offset();
-        widget.clearButton
-          .offset({
-            top: offset.top + ( Math.ceil((newSize.height - 16)/2) ), /* button height of 16px hardcoded. change if required */
-            left: offset.left + newSize.width
-          });
-        widget.elementSize = newSize;
-      }
-    });
   },
 
   _setOption: function(key, value) {

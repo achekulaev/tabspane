@@ -11,7 +11,8 @@ body {
   background-image: -webkit-linear-gradient(top, #e7e7e7 0%, #b8b8b8 100%);
   padding: 20px 0;
   border-bottom: 1px solid #696969;
-  border-top: 1px solid #f1f1f1; }
+  border-top: 1px solid #f1f1f1;
+  text-align: center; }
 
 .appleOddRow {
   border-top: 1px solid #efefef;
@@ -40,6 +41,9 @@ body {
   #tabsSearch:focus {
     box-shadow: inset 0 0 3px 0 blue;
     border: 1px solid #6397ca; }
+
+.searchWrapper {
+  margin: 0 auto; }
 
 #tabsPane {
   margin: 3em auto 0 auto;

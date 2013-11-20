@@ -8,6 +8,7 @@ $.widget('tabsPane.tabFilter', {
   },
 
   clearButton: $('<img src="img/clear.png" />').appendTo('body'),
+  elementSize: {},
 
   _create: function() {
     this.element.attr('placeholder', this.options.placeholder);
@@ -35,6 +36,26 @@ $.widget('tabsPane.tabFilter', {
         left: offset.left + this.element.width()
       })
       .on('click', function() { widget._clear(); });
+
+    //handle resize
+    this.elementSize.height = this.element.height();
+    this.elementSize.width = this.element.width();
+    $(window).resize(function() {
+      //using window.resize is not universal but should be enough for this plugin
+      var
+        element = widget.element,
+        oldSize = widget.elementSize,
+        newSize = { height: element.height(), width: element.width() };
+      if (newSize != oldSize) {
+        var offset = element.offset();
+        widget.clearButton
+          .offset({
+            top: offset.top + ( Math.ceil((newSize.height - 16)/2) ), /* button height of 16px hardcoded. change if required */
+            left: offset.left + newSize.width
+          });
+        widget.elementSize = newSize;
+      }
+    });
   },
 
   _setOption: function(key, value) {

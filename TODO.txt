@@ -1,3 +1,4 @@
+menu http://codepen.io/sstephenson/pen/zepwD
 * remove current screenshot if tab gets redirected to another url
 
 + implement multiwindow support

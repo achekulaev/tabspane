@@ -83,14 +83,29 @@ body {
     width: 23px;
     height: 23px;
     margin: 3px 0 0 3px;
-    background: white url(../img/close.png) no-repeat;
-    background-position: 6px center;
-    border: 1px solid #878c92;
-    box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.35);
-    border-radius: 1em;
-    cursor: pointer; }
+    background: rgba(255, 255, 255, 0.35);
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.35);
+    border: 1px solid transparent;
+    border-radius: 23px;
+    cursor: pointer;
+    font-family: verdana; }
+  .tabCapture .tabCloseButton::before {
+    content: "\2716";
+    /* X sign */
+    line-height: 22px;
+    vertical-align: baseline;
+    margin-left: 6px;
+    color: #000; }
   .tabCapture:hover .tabCloseButton {
     display: block; }
+  .tabCapture .tabCloseButton:hover {
+    background: #e5908c;
+    border: 1px solid #eee;
+    border-radius: 23px;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.35);
+    text-shadow: 0px 0px 5px rgba(255, 0, 0, 0.35); }
+    .tabCapture .tabCloseButton:hover::before {
+      color: #eee; }
 
 .tabFooter {
   width: 283px;

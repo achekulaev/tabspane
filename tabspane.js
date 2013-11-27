@@ -197,12 +197,21 @@ Tabs = {
 
   remove: function(tabIdArray) {
     $(tabIdArray).each(function(index, tabId){
+      Tabs.unHighlight(tabId);
       $('#tabThumb' + tabId).parent(null).remove();
     });
   },
 
   exists: function(tabId) {
     return $('#tabThumb' + tabId).length;
+  },
+
+  close: function(tabIdArray) {
+    $(tabIdArray).each(function(index, tabId){
+      chrome.tabs.remove(tabId, function() {
+        Tabs.remove([tabId]);
+      });
+    });
   },
 
   clear: function() {
@@ -216,7 +225,7 @@ Tabs = {
     var skeleton = $(
       '<div class="tabOuter">' + // I have to append this div, otherwise jQuery doesn't see .tabThumb until it's appended
         '<div class="tabThumb">' +
-          '<div class="tabCapture" />' +
+          '<div class="tabCapture"><div class="tabCloseButton"></div></div>' +
           '<div class="tabFooter">' +
             '<img class="tabIcon" />' +
             '<div class="tabDescription"></div>' +
@@ -266,9 +275,13 @@ Tabs = {
       .click(function() {
         Tabs.activate(tab.id);
         Tabs.unHighlightAll();
-      })
-      .mouseenter(function() { tabCloseButton(tab.id); })
-      .mouseleave(function() { tabCloseButton(null); });
+      });
+    skeleton.find('.tabCloseButton')
+      .click(function(event) {
+        Tabs.close([tab.id]);
+        event.stopPropagation();
+        event.cancelBubble();
+      });
 
     return skeleton;
   },
@@ -311,9 +324,12 @@ Tabs = {
     }
   },
   unHighlightAll: function() {
-    for (var i in this.highlighted) {
-      $(this.highlighted[i]).removeClass('tabHighlighted');
-      delete this.highlighted[i];
+    var list = this.highlighted;
+    for (var i in list) {
+      if (list.hasOwnProperty(i)) {
+        $(list[i]).removeClass('tabHighlighted');
+        delete this.highlighted[i];
+      }
     }
   },
   /**
@@ -321,21 +337,23 @@ Tabs = {
    * @param search
    */
   filter: function(search) {
-    var highlighted = false, maxOffset = tabsPane.offset().top;
+    var firstHighlighted = false, maxOffset = tabsPane.offset().top;
 
     $('.tabOuter').each(function(index, item) {
       var top = $(this).offset().top;
+      // save max top offset of a tab to see if we need to show history pane
       maxOffset = top > maxOffset ? top : maxOffset;
       if (search != '') {
         if ($(this).find('.tabDescription').text().toLowerCase().match(search) == null) {
           $(this).css({display:'none'});
         } else {
-          if (!highlighted) {
+          if (!firstHighlighted) {
+            // highlight first tab found so it could be activated by hitting Enter
             var
               tabId = $(this).find('.tabThumb')[0].id.replace('tabThumb', ''),
               noScroll = true;
             Tabs.highlight(tabId, noScroll);
-            highlighted = true;
+            firstHighlighted = true;
           }
           $(this).css({display:'inline-block'});
         }
@@ -355,54 +373,6 @@ Tabs = {
     });
   }
 };
-
-/**
- * Tab close button. Single instance
- */
-(function(window) {
-  var button =
-    $('<img class="tabCloseButton" src="img/close.png"/>')
-      .css({
-        'display':'none'
-      })
-      .appendTo('body')
-      .click(function(event){ tabCloseButtonAction(); })
-      .mouseenter(function(){ clearTimeout(hideTimeout); })
-      .mouseleave(function(){ tabCloseButton(null); }),
-
-  targetId = null,
-  hideTimeout = null,
-
-  tabCloseButton = function(tabId) {
-    //provide NULL to hide the button
-    if (tabId != null) {
-      targetId = tabId;
-      var tabThumb = $('#tabThumb' + tabId);
-      if (tabThumb) {
-        clearTimeout(hideTimeout);
-        var offset = $(tabThumb).find('.tabCapture').offset();
-        $(button)
-          .css({
-            'display':'block',
-            top: (offset.top - 12) + 'px',
-            left: (offset.left - 12) + 'px'
-          });
-      }
-    } else {
-      hideTimeout = setTimeout(function () { $(button).css({'display':'none'}); }, 50);
-    }
-  };
-
-  function tabCloseButtonAction() {
-    chrome.tabs.remove(parseInt(targetId), function() {
-      Tabs.unHighlight(parseInt(targetId));
-      $(button).css({'display':'none'});
-    });
-  }
-
-  window.tabCloseButton = tabCloseButton;
-})(window);
-
 
 /*** Helper functions ***/
 

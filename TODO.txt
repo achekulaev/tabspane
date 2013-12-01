@@ -1,4 +1,5 @@
 menu http://codepen.io/sstephenson/pen/zepwD
+* redo search field with type=search
 * remove current screenshot if tab gets redirected to another url
 
 + implement multiwindow support
@@ -6,7 +7,6 @@ menu http://codepen.io/sstephenson/pen/zepwD
 http://jqueryui.com/autocomplete/#default
 http://stackoverflow.com/questions/3695184/jquery-autocomplete-highlighting
 + Implement simple custom tab grouping
-* simplify all that fancy events model to rescan tabs each time when it's needed???
 * when favicon is updated update screenshot if screenshot is absent and thumb only has favicon
 chrome://favicon/size/16@1x/https://www.google.com
 

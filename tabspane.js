@@ -275,12 +275,19 @@ Tabs = {
       .click(function() {
         Tabs.activate(tab.id);
         Tabs.unHighlightAll();
+      })
+      .mousedown(function(event) {
+        if (event.which == 3) {
+          Menu.show(event, this);
+        }
+      })
+      .mouseleave(function() {
+        Menu.hide();
       });
     skeleton.find('.tabCloseButton')
       .click(function(event) {
         Tabs.close([tab.id]);
         event.stopPropagation();
-        event.cancelBubble();
       });
 
     return skeleton;
@@ -373,6 +380,38 @@ Tabs = {
     });
   }
 };
+
+Menu = {
+  _menu : $('#tabMenu'),
+
+  show: function(mouseEvent, element) {
+    this._menu = $('#tabMenu').detach();
+    this._menu.appendTo(element);
+    this._menu
+      .css({
+        left: mouseEvent.clientX + window.scrollX + 'px',
+        top: mouseEvent.clientY + window.scrollY + 'px'
+      })
+      .show();
+  },
+
+  hide: function() {
+    this._menu.hide().css({ left: 0, top: 0 });
+  },
+
+  init: function() {
+    //prevent context menu
+    document.oncontextmenu = function(event) {
+      return false;
+    };
+    var menu = this;
+    shortcut.add('Escape', function() {
+      menu.hide();
+    });
+  }
+
+};
+Menu.init();
 
 /*** Helper functions ***/
 

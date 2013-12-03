@@ -51,7 +51,6 @@ body {
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
   color: #222;
-  text-shadow: 0px 1px 0px #e5e5ee;
   display: none; }
   body.osx #tabsPane {
     font-family: 'Lucida Grande', sans-serif;
@@ -160,10 +159,10 @@ body {
 
 /* Menu */
 menu {
-  display: block;
+  display: none;
   position: absolute;
-  top: 50px;
-  left: 50px;
+  top: 0;
+  left: 0;
   margin: 0;
   padding: 3px 0 4px;
   background: rgba(255, 255, 255, 0.95);
@@ -171,7 +170,8 @@ menu {
   border-radius: 4px;
   font-family: Lucida Grande;
   font-size: 14px;
-  line-height: 15px; }
+  line-height: 15px;
+  z-index: 2; }
 
 menu::before {
   display: block;

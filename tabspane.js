@@ -8,8 +8,9 @@ if (navigator.platform == 'MacIntel') {
 //prevent "jumping" because of scrollBar appear/disappear
 body.css({width: body.width()});
 
-//Search field and history pane
+//onload actions
 $(function(){
+  //Search field
   $('#tabsSearch').tabFilter({
     filter: '',
     shortcut: 'Tab',
@@ -22,6 +23,8 @@ $(function(){
   shortcut.add('Enter', function () {
     Tabs.activateHighlighted();
   });
+
+  //History pane
   historyPane = $('#historyPane').historyPane({
     //TODO move "hide history when search is not active" to options
     onFilter: function(event, data) {
@@ -30,6 +33,13 @@ $(function(){
       });
     }
   });
+
+  //Tab context Menu
+  Menu.fill([
+    {label: 'Red', callback: function() { alert(1);} },
+    {label: 'Dazdingo'},
+    {label: 'Blue'}
+  ]);
 });
 
 // Messages handling

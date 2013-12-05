@@ -330,7 +330,7 @@ Tabs = {
         offset = tab.offset();
     if (tab != []) {
       this.highlighted[tabId] = '#tabThumb' + tabId;
-      if (noScroll !== true) window.scrollTo(offset.left, offset.top);
+      if (noScroll !== true) window.scrollTo(offset.left, offset.top - 10);
       tab.addClass('tabHighlighted');
     }
   },
@@ -354,12 +354,9 @@ Tabs = {
    * @param search
    */
   filter: function(search) {
-    var firstHighlighted = false, maxOffset = tabsPane.offset().top;
+    var firstHighlighted = false, visibleCount = 0;
 
     $('.tabOuter').each(function(index, item) {
-      var top = $(this).offset().top;
-      // save max top offset of a tab to see if we need to show history pane
-      maxOffset = top > maxOffset ? top : maxOffset;
       if (search != '') {
         if ($(this).find('.tabDescription').text().toLowerCase().match(search) == null) {
           $(this).css({display:'none'});
@@ -373,16 +370,25 @@ Tabs = {
             firstHighlighted = true;
           }
           $(this).css({display:'inline-block'});
+          visibleCount++;
         }
       } else {
         //empty search. all tabs
-        $(this).css({display:'inline-block'});
+        $(this).css({ display: 'inline-block' });
+        firstHighlighted = true;
       }
 
     });
+
+    if (!firstHighlighted) {
+      tabsPane.css({ display: 'none' });
+    } else {
+      tabsPane.css({ display: 'block' });
+    }
+
     $('.tabOuter').promise().done(function() {
       //Show history pane only when there is 1 or 0 rows of tab results
-      if (maxOffset <= tabsPane.offset().top) {
+      if (visibleCount <= 6) {
         historyPane.historyPane({'filter': search});
       } else {
         historyPane.historyPane({'filter': ''});

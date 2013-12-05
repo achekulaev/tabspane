@@ -57,7 +57,7 @@ body {
 }
 
 #tabsPane {
-  margin: 3em auto 0 auto; /* matters when width is set tabspane.js:adjustLayout() */
+  margin: 0 auto 3em auto; /* matters when width is set tabspane.js:adjustLayout() */
 
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
@@ -73,7 +73,7 @@ body {
   width: 350px;
   display: inline-block;
   min-width: 333px;
-  margin-bottom: 3em;
+  margin-top: 3em;
 }
 
 .tabCapture {

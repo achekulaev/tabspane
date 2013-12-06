@@ -51,16 +51,18 @@ body {
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
   color: #222;
-  display: none; }
+  display: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none; }
   body.osx #tabsPane {
     font-family: 'Lucida Grande', sans-serif;
     font-size: 14px; }
 
 .tabOuter {
-  width: 350px;
+  width: 284px;
   display: inline-block;
-  min-width: 333px;
-  margin-top: 3em; }
+  margin: 3em 33px 0 33px; }
 
 .tabCapture {
   display: block;

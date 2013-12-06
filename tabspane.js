@@ -5,9 +5,6 @@ if (navigator.platform == 'MacIntel') {
   body.addClass('osx');
 }
 
-//prevent "jumping" because of scrollBar appear/disappear
-body.css({width: body.width()});
-
 //onload actions
 $(function(){
   //Search field
@@ -124,7 +121,9 @@ $(window).resize(function(){ adjustLayout() });
  * Adjust tabspane width according to window width
  */
 function adjustLayout() {
+  //prevent layout "jumping" when scrollBar appears/disappears
   body.css({width: $(window).width()});
+
   var tabOuterWidth = 350, //see tabspane.css .tabOuter width
       width = parseInt($('body').css('width')),
       columns = Math.floor(width / tabOuterWidth),

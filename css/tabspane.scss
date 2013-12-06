@@ -67,13 +67,15 @@ body {
     font-family: 'Lucida Grande', sans-serif;
     font-size: 14px;
   }
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
 }
 
-.tabOuter {
-  width: 350px;
+.tabOuter { //total width: 350px
+  width: 284px;
   display: inline-block;
-  min-width: 333px;
-  margin-top: 3em;
+  margin: 3em 33px 0 33px;
 }
 
 .tabCapture {

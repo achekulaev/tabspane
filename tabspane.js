@@ -1,41 +1,19 @@
 var body = $('body'),
     tabsPane = $('#tabsPane'),
     historyPane = $('#historyPane');
-if (navigator.platform == 'MacIntel') {
-  body.addClass('osx');
-}
 
 //onload actions
 $(function(){
-  //Search field
-  $('#tabsSearch').tabFilter({
-    filter: '',
-    shortcut: 'Tab',
-    onChanged: function(event, data) {
-      Tabs.unHighlightAll();
-      tabsPane.sortable(data.filter == '' ? 'enable' : 'disable');
-      Tabs.filter(data.filter);
-    }
-  });
-  shortcut.add('Enter', function () {
-    Tabs.activateHighlighted();
-  });
-
-  //History pane
-  historyPane = $('#historyPane').historyPane({
-    //TODO move "hide history when search is not active" to options
-    onFilter: function(event, data) {
-      $('#historyPane').parent().css({
-        display: data.filter == "" ? 'none' : 'block'
-      });
-    }
-  });
+  Extension.initLayout();
+  Extension.initSearchField();
+  Extension.initHistoryPane();
+  Extension.initShortcuts();
 
   //Tab context Menu
   Menu.fill([
-    {label: 'Red', callback: function() { alert(1);} },
-    {label: 'Dazdingo'},
-    {label: 'Blue'}
+    { label: 'Red', callback: function() { alert(1); } },
+    { label: 'Dazdingo' },
+    { label: 'Blue' }
   ]);
 });
 
@@ -82,57 +60,115 @@ chrome.extension.onMessage.addListener(function(request, sender, response) {
   return null;
 });
 
-//Initial pane load
-chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
-  //enable sortable list
-  tabsPane.sortable({
-    tolerance:'pointer',
-    delay: 50,
-    distance: 5,
-    scroll: false,
-//    create: function (event, ui) {
-//      console.log('sorting now');
-//    },
-    start: function (event, ui) {
-      $('.tabCloseButton').css({visibility:'hidden'});
-    },
-    stop: function (event, ui) {
-      $('.tabCloseButton').css({visibility:'visible'});
-      var tabId = ui.item.find('.tabThumb')[0].id.replace('tabThumb','');
-      tabCloseButton(tabId);
-
-      chrome.tabs.move(parseInt(tabId), {'windowId':null, 'index': ui.item.index() });
-    }
-  }).disableSelection();
-
-  Tabs.clear();
-  Tabs.append(paneData.tabs);
-  $(tabsPane).fadeIn("fast");
-
+chrome.windows.getCurrent({}, function(currentWindow) {
+  // Request initial tabs data from background page
+  chrome.runtime.sendMessage(null, {'command': 'tabList', currentWindow: currentWindow.id}, function (paneData) {
+    Extension.initSortable();
+    Extension.initTabs(paneData.tabs);
+  });
 });
-
-//Layout handling
-adjustLayout();
-$(window).resize(function(){ adjustLayout() });
 
 /*** End runtime ***/
 
 /**
- * Adjust tabspane width according to window width
+ * Collection to encapsulate loading extension parts
  */
-function adjustLayout() {
-  //prevent layout "jumping" when scrollBar appears/disappears
-  body.css({width: $(window).width()});
+Extension = {
+  /**
+   * Init style related properties
+   */
+  initLayout: function() {
+    $(window).resize(function() {
+      Extension._setLayoutWidth();
+    });
+    // Mac OS style
+    if (navigator.platform == 'MacIntel') {
+      body.addClass('osx');
+    }
+    // Width to look fancy
+    this._setLayoutWidth();
+  },
 
-  var tabOuterWidth = 350, //see tabspane.css .tabOuter width
+  /**
+   * Adjust panes width according to window width
+   */
+  _setLayoutWidth: function() {
+    //prevent layout "jumping" when scrollBar appears/disappears
+    body.css({width: $(window).width()});
+
+    var tabOuterWidth = 350, //see tabspane.css .tabOuter width
       width = parseInt($('body').css('width')),
       columns = Math.floor(width / tabOuterWidth),
       css = {
         'width': (tabOuterWidth * (columns > 0 ? columns : 1)) + 'px'
       };
-  tabsPane.css(css);
-  historyPane.css(css);
-}
+    tabsPane.css(css);
+    historyPane.css(css);
+  },
+
+  initSearchField: function() {
+    $('#tabsSearch').tabFilter({
+      filter: '',
+      shortcut: 'Tab',
+      onChanged: function(event, data) {
+        Tabs.unHighlightAll();
+        tabsPane.sortable(data.filter == '' ? 'enable' : 'disable');
+        Tabs.filter(data.filter);
+      }
+    });
+  },
+
+  initHistoryPane: function() {
+    historyPane = $('#historyPane').historyPane({
+      //TODO move "hide history when search is not active" to options
+      onFilter: function(event, data) {
+        $('#historyPane').parent().css({
+          display: data.filter == "" ? 'none' : 'block'
+        });
+      }
+    });
+  },
+
+  initShortcuts: function() {
+    shortcut.add('Enter', function () {
+      Tabs.activateHighlighted();
+    });
+  },
+
+  /**
+   * Initialize Sortable UI for tabs list
+   */
+  initSortable: function() {
+    //enable sortable list
+    tabsPane.sortable({
+      tolerance:'pointer',
+      delay: 50,
+      distance: 5,
+      scroll: false,
+      start: function (event, ui) {
+        //on drag start
+      },
+      stop: function (event, ui) {
+        //on drag stop
+        //move real tabs according to THE NEW WORLD ORDER >:->
+        var tabId = ui.item.find('.tabThumb')[0].id.replace('tabThumb','');
+        //TODO: real tab operations should not happen here
+        chrome.tabs.move(parseInt(tabId), { 'windowId':null, 'index': ui.item.index() });
+      }
+    }).disableSelection();
+  },
+
+  /**
+   * Render all tab thumbnails form tabs array
+   * @param tabs
+   */
+  initTabs: function(tabs) {
+    Tabs.clear();
+    Tabs.append(tabs);
+    $(tabsPane).fadeIn("fast");
+  }
+};
+
 
 Tabs = {
   highlighted: {},

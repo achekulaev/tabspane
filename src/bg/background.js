@@ -77,7 +77,6 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
 /**
  * On tab created append a tab
  */
-
 chrome.tabs.onCreated.addListener(function(tab) {
   chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'changeInfo': {}, 'tab': tab});
 });
@@ -89,6 +88,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'changeInfo': changeInfo, 'tab': tab});
 
   if (changeInfo.status == 'complete' && tab.url != 'chrome://newtab/' && tab.id == activeTab) {
+//    chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'tab': tab});
     //refresh capture if current tab finished loading
     takeScreenshot(tabId);
   }

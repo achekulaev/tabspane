@@ -84,7 +84,7 @@ chrome.browserAction.onClicked.addListener(function (tab) {
     url: chrome.extension.getURL('') + '*'
   }, function (tabs) {
     if (tabs.length) {
-      chrome.runtime.sendMessage(null, {command: 'highlight', tab: {id: activeTab}});
+      Background.sendMessage({ command: 'highlight', tab: {id: activeTab}, windowId: tabs[0].windowId });
       chrome.tabs.update(parseInt(tabs[0].id), {'active': true});
     } else {
       chrome.tabs.create({'url': chrome.extension.getURL('tabspane.html')});

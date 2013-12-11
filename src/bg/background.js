@@ -35,6 +35,10 @@ Background = {
     }
 
     chrome.runtime.sendMessage(null, message, callback ? callback : function(){});
+  },
+
+  isExtensionURL: function(url) {
+    return chrome.extension.getURL('tabspane.html') == url;
   }
 };
 
@@ -93,9 +97,12 @@ chrome.browserAction.onClicked.addListener(function (tab) {
  */
 chrome.tabs.onActivated.addListener(function(activeInfo) {
   activeTab = activeInfo.tabId;
-  Background.log('onActivated capture');
-  Background.log(activeInfo);
-  takeScreenshot(activeInfo.tabId, activeInfo.windowId);
+  //TODO possibly redo here in future to avoid get call per each tab
+  chrome.tabs.get(activeTab, function(tab) {
+    if (!Background.isExtensionURL(tab.url)) {
+      takeScreenshot(activeInfo.tabId, activeInfo.windowId);
+    }
+  });
 });
 
 /**
@@ -123,8 +130,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
   if (changeInfo.status == 'complete' && tab.url != 'chrome://newtab/' && tab.id == activeTab) {
     //refresh capture if current tab finished loading
-    Background.log('onUpdated capture');
-    takeScreenshot(tabId, tab.windowId);
+    if (!Background.isExtensionURL(tab.url)) {
+      takeScreenshot(tabId, tab.windowId);
+    }
   }
 });
 
@@ -139,7 +147,6 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
   //add new tab
   chrome.tabs.get(addedTabId, function(tab) {
     Background.sendMessage({ command: 'tabUpdate', tab: tab, windowId: tab.windowId });
-    Background.log('onReplaced capture');
     takeScreenshot(tab.id, tab.windowId);
   });
 });

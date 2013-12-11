@@ -24,9 +24,10 @@ $(function(){
 
   chrome.windows.getCurrent({}, function(currentWindow) {
     Foreground.currentWindow = currentWindow.id;
+    Foreground.initSortable();
+
     // Request initial tabs data from background page
     Foreground.sendMessage({'command': 'tabList', currentWindow: currentWindow.id}, function(paneData) {
-      Foreground.initSortable();
       Foreground.initTabs(paneData.tabs);
     });
   });
@@ -111,8 +112,9 @@ Foreground = {
     //enable sortable list
     tabsPane.sortable({
       tolerance:'pointer',
-      delay: 50,
-      distance: 5,
+//      delay: 20,
+//      distance: 5,
+//      distance: 5,
       scroll: false,
       start: function (event, ui) {
         //on drag start
@@ -155,6 +157,10 @@ Foreground = {
   sendMessage: function(message, callback) {
     message.windowId = this.currentWindow;
     chrome.runtime.sendMessage(null, message, callback ? callback : function(){} ); //for external messages params look like (extId, message, callback)
+  },
+
+  isExtensionURL: function(url) {
+    return chrome.extension.getURL('tabspane.html') == url;
   }
 };
 
@@ -246,22 +252,24 @@ Tabs = {
             //TODO make some sort of function in Tabs to alter Tab info
             break;
           case 'capture':
-            $(tabThumb).find('.tabCapture').css({
-              'background': 'url('+ changeInfo.capture +')',
-              'background-size': 'cover'
-            });
+            if (!Foreground.isExtensionURL(tab.url)) {
+              $(tabThumb).find('.tabCapture').css({
+                'background': 'url('+ changeInfo.capture +')',
+                'background-size': 'cover'
+              });
+            }
             break;
           case 'indexFwd':
-            var target = tabsPane.find('.tabOuter:nth-child({0})'.format(changeInfo.indexFwd + 1));
-            tabThumb.parent(null).insertAfter(target);
+            var fwdTarget = tabsPane.find('.tabOuter:nth-child({0})'.format(changeInfo.indexFwd + 1));
+            tabThumb.parent(null).insertAfter(fwdTarget);
             tabsPane.sortable('refresh');
             break;
           case 'indexBkwd':
-            var target = tabsPane.find('.tabOuter:nth-child({0})'.format(changeInfo.indexBkwd > 0 ? changeInfo.indexBkwd : 1));
+            var bkwdTarget = tabsPane.find('.tabOuter:nth-child({0})'.format(changeInfo.indexBkwd > 0 ? changeInfo.indexBkwd : 1));
             if (changeInfo.indexBkwd > 0) {
-              tabThumb.parent(null).insertAfter(target);
+              tabThumb.parent(null).insertAfter(bkwdTarget);
             } else {
-              tabThumb.parent(null).insertBefore(target);
+              tabThumb.parent(null).insertBefore(bkwdTarget);
             }
             tabsPane.sortable('refresh');
             break;
@@ -318,18 +326,21 @@ Tabs = {
 
     var favIconUrl = smallIcon;
 
-    //set tabsPane icon
-    if (tab.url.match(/^chrome-extension:\/\/.*tabspane\.html$/)) {
+    var captureImage;
+    //set tabsPane icon & capture
+    if (Foreground.isExtensionURL(tab.url)) {
       skeleton.find('.tabIcon').attr('src', chrome.extension.getURL('icons/icon16.png'));
       skeleton.find('.tabDescription').html('Tabs Pane');
+      captureImage = chrome.extension.getURL('img/capture.png');
     } else {
+    //set all other tabs icons and captures
       skeleton.find('.tabIcon').attr('src', favIconUrl);
       skeleton.find('.tabDescription').html('{0} ({1})'.format(tab.title, tab.url));
+      captureImage = chrome.extension.getBackgroundPage().tabCaptures[tab.id];
     }
 
-
     //capture
-    var captureImage = chrome.extension.getBackgroundPage().tabCaptures[tab.id];
+
     var tabCapture = skeleton.find('.tabCapture');
     if (captureImage != null) {
       tabCapture

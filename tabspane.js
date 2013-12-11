@@ -4,10 +4,10 @@ var body = $('body'),
 
 //onload actions
 $(function(){
-  Extension.initLayout();
-  Extension.initSearchField();
-  Extension.initHistoryPane();
-  Extension.initShortcuts();
+  Foreground.initLayout();
+  Foreground.initSearchField();
+  Foreground.initHistoryPane();
+  Foreground.initShortcuts();
 
   //Tab context Menu
   Menu.fill([
@@ -15,57 +15,22 @@ $(function(){
     { label: 'Dazdingo' },
     { label: 'Blue' }
   ]);
-});
 
 // Messages handling
-chrome.extension.onMessage.addListener(function(request, sender, response) {
-  if (!request.hasOwnProperty('command')) {
-    return false;
-  }
-  switch (request.command) {
-    // refresh the pane
-    case 'refresh':
-      chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
-        refreshPane(paneData.tabs);
-      });
-      break;
-    // create a tab
-    // syntax {tab: Tab Object}
-    case 'tabCreate':
-      Tabs.append(request.tab);
-      break;
-    // update a tab
-    // syntax {command:tabUpdate, changeInfo: changeInfo Object, tab: Tab Object}
-    case 'tabUpdate':
-      if (Tabs.exists(request.tab.id)) {
-        Tabs.update(request.changeInfo, request.tab);
-      } else {
-        Tabs.append(request.tab);
-      }
-      break;
-    case 'tabCaptureUpdate':
-      Tabs.update(request.changeInfo, request.tab);
-      break;
-    // remove tab(s)
-    // syntax {command:tabRemove, tabIdArray:[ array of tab ids ]}
-    case 'tabRemove':
-      Tabs.remove($(request.tabIdArray));
-      break;
-    case 'highlight':
-      Tabs.highlight(request.tab.id);
-      break;
-    default:
-      return false;
-  }
-  return null;
-});
-
-chrome.windows.getCurrent({}, function(currentWindow) {
-  // Request initial tabs data from background page
-  chrome.runtime.sendMessage(null, {'command': 'tabList', currentWindow: currentWindow.id}, function (paneData) {
-    Extension.initSortable();
-    Extension.initTabs(paneData.tabs);
+  chrome.extension.onMessage.addListener(function(request, sender, response) {
+    //TODO: check sender here
+    Foreground.processMessage(request);
   });
+
+  chrome.windows.getCurrent({}, function(currentWindow) {
+    Foreground.currentWindow = currentWindow.id;
+    // Request initial tabs data from background page
+    Foreground.sendMessage({'command': 'tabList', currentWindow: currentWindow.id}, function(paneData) {
+      Foreground.initSortable();
+      Foreground.initTabs(paneData.tabs);
+    });
+  });
+
 });
 
 /*** End runtime ***/
@@ -73,13 +38,17 @@ chrome.windows.getCurrent({}, function(currentWindow) {
 /**
  * Collection to encapsulate loading extension parts
  */
-Extension = {
+Foreground = {
+  /* const */
+  ALL_WINDOWS: -15,
+  /* vars */
+  currentWindow: null,
   /**
    * Init style related properties
    */
   initLayout: function() {
     $(window).resize(function() {
-      Extension._setLayoutWidth();
+      Foreground._setLayoutWidth();
     });
     // Mac OS style
     if (navigator.platform == 'MacIntel') {
@@ -152,8 +121,7 @@ Extension = {
         //on drag stop
         //move real tabs according to THE NEW WORLD ORDER >:->
         var tabId = ui.item.find('.tabThumb')[0].id.replace('tabThumb','');
-        //TODO: real tab operations should not happen here
-        chrome.tabs.move(parseInt(tabId), { 'windowId':null, 'index': ui.item.index() });
+        Foreground.sendMessage({command: 'move', tabId: tabId, index: ui.item.index()}, null);
       }
     }).disableSelection();
   },
@@ -166,12 +134,78 @@ Extension = {
     Tabs.clear();
     Tabs.append(tabs);
     $(tabsPane).fadeIn("fast");
+  },
+
+  /*** Message functions ***/
+
+  /**
+   * Process a message from background page or another extension
+   * @param request
+   */
+  processMessage: function(request) {
+    if (request.windowId == this.currentWindow || request.windowId == this.ALL_WINDOWS) {
+      Tabs.processMessage(request);
+    }
+  },
+  /**
+   * Sends a message
+   * @param message
+   * @param callback
+   */
+  sendMessage: function(message, callback) {
+    message.windowId = this.currentWindow;
+    chrome.runtime.sendMessage(null, message, callback ? callback : function(){} ); //for external messages params look like (extId, message, callback)
   }
 };
 
-
 Tabs = {
   highlighted: {},
+
+  processMessage: function(request) {
+    switch (request.command) {
+      case 'log':
+        console.log(request.data);
+        break;
+      case 'logT':
+        console.table(request.data);
+        break;
+      // refresh the pane
+      case 'refresh':
+        chrome.runtime.sendMessage(null, {'command': 'tabList'}, function (paneData) {
+          refreshPane(paneData.tabs);
+        });
+        break;
+      // create a tab
+      // syntax {tab: Tab Object}
+      case 'tabCreate':
+        Tabs.append(request.tab);
+        break;
+      // update a tab
+      // syntax {command:tabUpdate, changeInfo: changeInfo Object, tab: Tab Object}
+      case 'tabUpdate':
+        if (Tabs.exists(request.tab.id)) {
+          Tabs.update(request.changeInfo, request.tab);
+        } else {
+          Tabs.append(request.tab);
+        }
+        break;
+      case 'tabCaptureUpdate':
+        Tabs.update(request.changeInfo, request.tab);
+        break;
+      // remove tab(s)
+      // syntax {command:tabRemove, tabIdArray:[ array of tab ids ]}
+      case 'tabRemove':
+        Tabs.remove($(request.tabIdArray));
+        break;
+      case 'highlight':
+        Tabs.highlight(request.tab.id);
+        break;
+      default:
+        break;
+    }
+
+    return false;
+  },
 
   append: function(tabArray) {
     // tabArray is supposed to be ordered by tab index in the window (!)
@@ -208,7 +242,7 @@ Tabs = {
             $(tabThumb).find('.tabDescription').html('{0} ({1})'.format(tab.title, tab.url));
             break;
           case 'favIconUrl':
-            $(tabThumb).find('.tabIcon').attr('src', 'chrome://favicon/size/16@1x/' + changeInfo.favIconUrl);
+            $(tabThumb).find('.tabIcon').attr('src', 'chrome://favicon/size/16@1x/' + tab.url);
             //TODO make some sort of function in Tabs to alter Tab info
             break;
           case 'capture':

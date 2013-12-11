@@ -4,31 +4,63 @@
 //     "sample_setting": "This is how you use Store.js to remember values"
 // });
 
-var captureFormat = {'format':'jpeg', 'quality': 80};
-
 var currentWindowTabs = [];
 var tabCaptures = [];
 var activeTab = null;
+
+
+Background = {
+  /* const */
+  ALL_WINDOWS: -15,
+  CAPTURE_FORMAT: {'format':'jpeg', 'quality': 80},
+  /* vars */
+  currentWindow: null,
+
+  /**
+   * Sends log messages to foreground page to ease debugging
+   */
+  log: function(data) {
+    this.sendMessage({ command: 'log', data: data });
+  },
+  /**
+   * Sends log messages to foreground page to ease debugging
+   */
+  logT: function(data) {
+    this.sendMessage({ command: 'logT', data: data });
+  },
+
+  sendMessage: function(message, callback) {
+    if (!message.windowId) {
+      message.windowId = this.currentWindow;
+    }
+
+    chrome.runtime.sendMessage(null, message, callback ? callback : function(){});
+  }
+};
+
+chrome.windows.getCurrent({}, function(currentWindow) {
+  Background.currentWindow = currentWindow.id;
+});
 
 /**
  * Message handling
  */
 chrome.extension.onMessage.addListener(
   function (request, sender, sendResponse) {
-    if (!request.hasOwnProperty('command')) {
-      return false;
-    }
     switch (request.command) {
       case 'tabList':
-        // Async query for tabs
+        // query tabs
         chrome.tabs.query({
-          currentWindow: true
+          windowId: request.windowId ? request.windowId : chrome.windows.WINDOW_ID_CURRENT
         }, function (tabs) {
-          currentWindowTabs = tabs;
-          sendResponse({'tabs':currentWindowTabs, 'tabCaptures':tabCaptures});
+          currentWindowTabs = tabs; //TODO: save tabs PER window
+          sendResponse({ 'tabs': currentWindowTabs, 'tabCaptures': tabCaptures });
+          //note: tabCaptures is empty on page load now but it will be loaded from storage in future
         });
         break;
-
+      case 'move':
+        chrome.tabs.move(parseInt(request.tabId), { windowId: request.windowId, index: parseInt(request.index) });
+        break;
       default:
         return false;
     }
@@ -61,36 +93,38 @@ chrome.browserAction.onClicked.addListener(function (tab) {
  */
 chrome.tabs.onActivated.addListener(function(activeInfo) {
   activeTab = activeInfo.tabId;
-  takeScreenshot(activeInfo.tabId);
+  Background.log('onActivated capture');
+  Background.log(activeInfo);
+  takeScreenshot(activeInfo.tabId, activeInfo.windowId);
 });
 
 /**
- * On Tab close event remove screenshot (capture)
+ * On Tab close event remove screenshot (capture).
  */
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
   if (tabCaptures[tabId] != null) {
     tabCaptures[tabId] = null;
   }
-  chrome.runtime.sendMessage(null, {'command': 'tabRemove', 'tabIdArray': [tabId]});
+  Background.sendMessage({ command: 'tabRemove', 'tabIdArray': [tabId], windowId: removeInfo.windowId });
 });
 
 /**
  * On tab created append a tab
  */
 chrome.tabs.onCreated.addListener(function(tab) {
-  chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'changeInfo': {}, 'tab': tab});
+  Background.sendMessage({ command: 'tabUpdate', changeInfo: {}, tab: tab, windowId: tab.windowId });
 });
 
 /**
  * On tab reloaded
  */
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'changeInfo': changeInfo, 'tab': tab});
+  Background.sendMessage({ command: 'tabUpdate', changeInfo: changeInfo, tab: tab, windowId: tab.windowId});
 
   if (changeInfo.status == 'complete' && tab.url != 'chrome://newtab/' && tab.id == activeTab) {
-//    chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'tab': tab});
     //refresh capture if current tab finished loading
-    takeScreenshot(tabId);
+    Background.log('onUpdated capture');
+    takeScreenshot(tabId, tab.windowId);
   }
 });
 
@@ -101,11 +135,12 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
  */
 chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
   //remove old tab
-  chrome.runtime.sendMessage(null, {'command': 'tabRemove', 'tabIdArray': [removedTabId]});
+  Background.sendMessage({command: 'tabRemove', tabIdArray: [removedTabId], windowId: Background.ALL_WINDOWS});
   //add new tab
   chrome.tabs.get(addedTabId, function(tab) {
-    chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'tab': tab});
-    takeScreenshot(tab.id);
+    Background.sendMessage({ command: 'tabUpdate', tab: tab, windowId: tab.windowId });
+    Background.log('onReplaced capture');
+    takeScreenshot(tab.id, tab.windowId);
   });
 });
 
@@ -113,10 +148,11 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
  * Handle tab moving within a window
  */
 chrome.tabs.onMoved.addListener(function(tabId, moveInfo){
-  chrome.runtime.sendMessage(null, {
+  Background.sendMessage({
     command: 'tabUpdate',
-    'changeInfo': moveInfo.toIndex > moveInfo.fromIndex ? {'indexFwd': moveInfo.toIndex} : {'indexBkwd': moveInfo.toIndex},
-    'tab': {'id': tabId} // faux tab object with id only
+    changeInfo: moveInfo.toIndex > moveInfo.fromIndex ? { indexFwd: moveInfo.toIndex } : { indexBkwd: moveInfo.toIndex },
+    tab: {id: tabId }, // faux tab object with id only
+    windowId: moveInfo.windowId
   });
 });
 
@@ -127,20 +163,15 @@ chrome.tabs.onDetached.addListener(function(tabId, detachInfo) {
   if (tabCaptures[tabId] != null) {
     tabCaptures[tabId] = null;
   }
-  chrome.runtime.sendMessage(null, {'command': 'tabRemove', 'tabIdArray': [tabId]});
+  Background.sendMessage({command: 'tabRemove', 'tabIdArray': [tabId], windowId: detachInfo.oldWindowId});
 });
 
 /**
  * Tab attached to current window
  */
 chrome.tabs.onAttached.addListener(function(tabId, attachInfo) {
-  chrome.windows.get(attachInfo.newWindowId, {}, function(attachedToWindow) {
-    chrome.windows.getCurrent({'populate':true}, function(currentWindow) {
-      if (attachedToWindow.id == currentWindow.id) {
-        var newTab = currentWindow.tabs[attachInfo.newPosition];
-        chrome.runtime.sendMessage(null, {'command': 'tabUpdate', 'tab': newTab});
-      }
-    });
+  chrome.tabs.get(tabId, function(tab) {
+    Background.sendMessage({ command: 'tabUpdate', tab: tab, windowId: tab.windowId });
   });
 });
 
@@ -180,14 +211,19 @@ chrome.omnibox.onInputEntered.addListener(
 /**
  * Takes screenshot of currently visible tab, resizes and send a message to tabspane.js
  */
-function takeScreenshot(tabId) {
-  chrome.tabs.captureVisibleTab(null, captureFormat, function(dataUrl) {
+function takeScreenshot(tabId, windowId) {
+  chrome.tabs.captureVisibleTab(null, Background.CAPTURE_FORMAT, function(dataUrl) {
+    // We need to check if active tab is STILL that tab that used to be
+    // otherwise if tabs switch too fast then Chrome can substitute
+    // another's tab (sic!) dataUrl result here
+    if (activeTab == tabId) {
       tabCaptures[tabId] = dataUrl;
-      chrome.runtime.sendMessage(null, {
-        'command': 'tabCaptureUpdate',
-        'changeInfo': {'capture' : dataUrl},
-        'tab': { 'id': tabId } // faux tab object with id only
+      Background.sendMessage({
+        command: 'tabCaptureUpdate',
+        changeInfo: { capture : dataUrl },
+        tab: { id: tabId }, // simulate tab object
+        windowId: windowId
       });
-
+    }
   });
 }

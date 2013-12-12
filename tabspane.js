@@ -477,6 +477,175 @@ Tabs = {
   }
 };
 
+Groups = {
+  db: null,
+  data: {
+    tabs: [
+      // {id, tabId, windowId, groupId, url, title, index}
+    ],
+    groups: [],
+    _groups: [
+      { id: null, title: 'All Tabs' }
+    ]
+  },
+
+  init: function() {
+    this.db = SpahQL.db(this.data);
+  },
+
+  create: function(title) {
+    //
+  },
+
+  setGroup: function(tabs, groupId) {
+    tabs.forEach(function (tab) {
+
+    })
+  }
+};
+Groups.init();
+
+
+$.widget('tabspane.multiselect', {
+  /* const */
+  IS_NOT_DRAGGING: 0,
+  IS_DRAGGING: 1,
+  IS_SELECTING: 2,
+  /* vars */
+  options: {
+    itemsSelector: null,
+    cancelSelectors: [] //set of selectors where dragging will not start
+  },
+  state: this.IS_NOT_DRAGGING,
+  coords: { clientX: 0, clientY: 0 },
+  rectangleId: '__multiselect__rectangle',
+  rectangleCSS: { position: 'absolute', zIndex: 2, border: '1px solid red' },
+  rectangle: $('<div/>').attr({ id: this.rectangleId}),
+  items: [],
+
+  _create: function() {
+    var widget = this;
+
+    this.element.disableSelection();
+    this.rectangle.css(this.rectangleCSS).appendTo(this.element);
+
+    this.element
+      .mousedown(function(event) {
+        // stop event if item of cancelSelectors was clicked
+        var cancelEvent = $(event.target).is(function() {
+          for (var i = 0; i < widget.options.cancelSelectors.length; i++) {
+            if ($(this).is(widget.options.cancelSelectors[i])) {
+              return true;
+            }
+          }
+          return false;
+        });
+
+        if (!cancelEvent) {
+          widget._dragInit(event);
+        } else {
+          widget.log('cancelling the event')
+        }
+      })
+      .mouseup(function(event) {
+        widget._dragEnd(event);
+      });
+  },
+
+  refresh: function() {
+    this.items = $(this.itemsSelector);
+  },
+
+  log: function(messages) {
+    for (var i = 0; i < arguments.length; i++) {
+      if (typeof arguments[i] == 'string') {
+        console.log('Multiselect: ' + arguments[i]);
+      } else {
+        console.log('Multiselect: ');
+        console.log(arguments[i]);
+      }
+    }
+  },
+
+  _setState: function(state) {
+    this.state = state;
+  },
+
+  _dragInit: function(event) {
+    this._setState(this.IS_DRAGGING);
+    this.element.css({ cursor: 'crosshair' });
+    this.coords = { clientX: event.clientX, clientY: event.clientY };
+    this.element.bind('mousemove', { widget: this }, this._dragMove);
+    this.log('drag init');
+  },
+
+  _dragMove: function(event) {
+    var widget = event.data.widget;
+    var size = {
+      width: event.clientX - widget.coords.clientX,
+      height: event.clientY - widget.coords.clientY
+    };
+    if (widget.state != widget.IS_SELECTING && (Math.abs(size.width) > 5) && (Math.abs(size.height) > 5)) {
+      widget._rectangleInit(size);
+    }
+    // make selection work faster
+    if (size.width % 2 || size.height % 2) {
+      widget._rectangleDraw(size);
+    }
+  },
+
+  _dragEnd: function(event) {
+    if (this.state > this.IS_NOT_DRAGGING) {
+      this.element.unbind('mousemove');
+      this._rectangleDestroy();
+      this._trigger("onSelected", null, { elements: "blah" });
+      this.log('drag end');
+    } else {
+      //
+    }
+    this.element.css({ cursor: 'auto' });
+    this._setState(this.IS_NOT_DRAGGING);
+  },
+  _rectangleInit: function(size) {
+    this._setState(this.IS_SELECTING);
+    this.rectangle
+      .css({
+        left: this.coords.clientX + 'px',
+        top: this.coords.clientY + 'px'
+      })
+      .show();
+    this._rectangleDraw(size);
+
+    this.log('selection starting');
+  },
+  _rectangleDraw: function(size) {
+    var css = {
+      width: Math.abs(size.width) + 'px',
+      height: Math.abs(size.height) + 'px'
+    };
+
+    if (size.width < 0) {
+      css.left = this.coords.clientX + size.width;
+    }
+    if (size.height < 0) {
+      css.top = this.coords.clientY + size.height;
+    }
+
+    this.rectangle.css(css);
+  },
+  _rectangleDestroy: function() {
+    this.rectangle.hide();
+  }
+});
+
+$('.appleOddRow').multiselect({
+  itemsSelector: '.tabThumb',
+  cancelSelectors: ['div.tabCapture'],
+  onSelected: function(event, elements) {
+    console.log(elements);
+  }
+});
+
 /*** Helper functions ***/
 
 /**

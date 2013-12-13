@@ -517,30 +517,33 @@ $.widget('tabspane.multiselect', {
     cancelSelectors: [] //set of selectors where dragging will not start
   },
   state: this.IS_NOT_DRAGGING,
-  coords: { clientX: 0, clientY: 0 },
-  rectangleId: '__multiselect__rectangle',
+  startCoords: { clientX: 0, clientY: 0 }, // starting point coordinated
+  rectangleId: '__multiselect__rectangle', // id of canvas element
   rectangleCSS: { position: 'absolute', zIndex: 2, top: 0, left: 0, cursor: 'crosshair' },
   rectangle: $('<canvas/>').attr({ id: this.rectangleId}),
-  scrollTop: 0,
-  scrollLeft: 0,
-  items: [],
-  itemsCoords: [],
-  itemsHighlighted: [],
+  scrollTop: 0, // window.scrollTop
+  scrollLeft: 0, // window.scrollLeft
+  offset: { top: 0, left: 0 }, //canvas offset
+  items: [], // list of items matched by itemsSelector
+  itemsCoords: [], // coordinated of each item
+  itemsHighlighted: [], // list of items highlighted by current selection
 
   _create: function() {
     var widget = this;
 
     this.element.disableSelection();
+    this.offset = this.element.offset();
     this.rectangle
       .hide()
       .css(this.rectangleCSS)
+      .css({ top: this.offset.top, left: this.offset.left })
       .appendTo(this.element);
-    var context = this.rectangle.get(0).getContext('2d');
-    context.canvas.width = this.element.width();
-    context.canvas.height = $(window).height();
 
     this.element
       .mousedown(function(event) {
+        if (event.which != 1) {
+          return; // react to left button only
+        }
         // stop event if item of cancelSelectors was clicked
         var cancelEvent = $(event.target).is(function() {
           for (var i = 0; i < widget.options.cancelSelectors.length; i++) {
@@ -575,6 +578,15 @@ $.widget('tabspane.multiselect', {
         y2: offset.top + $(item).height()
       });
     });
+    this.refreshCanvas();
+  },
+
+  refreshCanvas: function() {
+    var context = this.rectangle.get(0).getContext('2d');
+    context.canvas.width = this.element.width();
+    context.canvas.height = this.element.height();
+    this.offset = this.element.offset();
+    this.rectangle.css({ top: this.offset.top, left: this.offset.left }); //if element moved since last time
   },
 
   log: function(messages) {
@@ -593,9 +605,11 @@ $.widget('tabspane.multiselect', {
   },
 
   _dragInit: function(event) {
+    window.getSelection().removeAllRanges(); // avoid any selected text being dragged
+    this.unHighlightAll();
     this._setState(this.IS_DRAGGING);
     this.refresh();
-    this.coords = { clientX: event.clientX, clientY: event.clientY };
+    this.startCoords = { clientX: event.clientX, clientY: event.clientY };
     this.scrollTop = $(window).scrollTop();
     this.scrollLeft = $(window).scrollLeft();
     this.element.bind('mousemove', { widget: this }, this._dragMove);
@@ -605,8 +619,8 @@ $.widget('tabspane.multiselect', {
   _dragMove: function(event) {
     var widget = event.data.widget;
     var size = {
-      width: event.clientX - widget.coords.clientX,
-      height: event.clientY - widget.coords.clientY
+      width: event.clientX - widget.startCoords.clientX,
+      height: event.clientY - widget.startCoords.clientY
     };
 
     if (widget.state != widget.IS_SELECTING && (Math.abs(size.width) > 5) && (Math.abs(size.height) > 5)) {
@@ -614,7 +628,7 @@ $.widget('tabspane.multiselect', {
     }
     // make selection work faster
     if (size.width % 2 || size.height % 2) {
-      widget._rectangleDraw(widget.coords, size);
+      widget._rectangleDraw(widget.startCoords, size);
     }
   },
 
@@ -622,7 +636,7 @@ $.widget('tabspane.multiselect', {
     if (this.state > this.IS_NOT_DRAGGING) {
       this.element.unbind('mousemove');
       this._rectangleDestroy();
-      this._trigger("onSelected", null, { elements: "blah" });
+      this._trigger("onSelected", null, { elements: this.itemsHighlighted });
       this.log('drag end');
     } else {
       //
@@ -630,13 +644,15 @@ $.widget('tabspane.multiselect', {
     this.element.css({ cursor: 'auto' });
     this._setState(this.IS_NOT_DRAGGING);
   },
+
   _rectangleInit: function(size) {
     this._setState(this.IS_SELECTING);
     this.rectangle.show();
-    this._rectangleDraw(this.coords, size);
+    this._rectangleDraw(this.startCoords, size);
 
     this.log('selection starting');
   },
+
   _rectangleDraw: function(coords, size) {
     var rect = this._rectangleCoords(
       coords.clientX + this.scrollLeft,
@@ -650,8 +666,8 @@ $.widget('tabspane.multiselect', {
     canvas.width = canvas.width;
     context.beginPath();
     context.rect(
-      coords.clientX + this.scrollLeft,
-      coords.clientY + this.scrollTop,
+      coords.clientX + this.scrollLeft - this.offset.left,
+      coords.clientY + this.scrollTop - this.offset.top,
       size.width,
       size.height
     );
@@ -660,6 +676,7 @@ $.widget('tabspane.multiselect', {
     context.stroke();
     this.highlightAll(rect)
   },
+
   /**
    * Get proper rectangle coordinates assuming that width/height may be negative (drawn left/up)
    * @param x1
@@ -677,15 +694,18 @@ $.widget('tabspane.multiselect', {
     rect.y2 = rect.y1 + Math.abs(height);
     return rect;
   },
+
   _rectangleIntersect: function(r1, r2) {
     return !(r2.x1 > r1.x2 ||
       r2.x2 < r1.x1 ||
       r2.y1 > r1.y2 ||
       r2.y2 < r1.y1);
   },
+
   _rectangleDestroy: function() {
     this.rectangle.hide();
   },
+
   highlightAll: function(rect) {
     var widget = this;
     this.unHighlightAll();
@@ -698,18 +718,21 @@ $.widget('tabspane.multiselect', {
       }
     });
   },
+
   highlight: function(item) {
     item.addClass('tabHighlighted');
   },
+
   unHighlightAll: function() {
     var i;
     while (i = this.itemsHighlighted.shift()) {
       this.unHighlight(i);
     }
   },
+
   unHighlight: function(item) {
     item.removeClass('tabHighlighted');
-  },
+  }
 });
 
 $('.appleOddRow').multiselect({

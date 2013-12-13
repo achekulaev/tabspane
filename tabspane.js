@@ -519,15 +519,25 @@ $.widget('tabspane.multiselect', {
   state: this.IS_NOT_DRAGGING,
   coords: { clientX: 0, clientY: 0 },
   rectangleId: '__multiselect__rectangle',
-  rectangleCSS: { position: 'absolute', zIndex: 2, border: '1px solid red' },
-  rectangle: $('<div/>').attr({ id: this.rectangleId}),
+  rectangleCSS: { position: 'absolute', zIndex: 2, top: 0, left: 0, cursor: 'crosshair' },
+  rectangle: $('<canvas/>').attr({ id: this.rectangleId}),
+  scrollTop: 0,
+  scrollLeft: 0,
   items: [],
+  itemsCoords: [],
+  itemsHighlighted: [],
 
   _create: function() {
     var widget = this;
 
     this.element.disableSelection();
-    this.rectangle.css(this.rectangleCSS).appendTo(this.element);
+    this.rectangle
+      .hide()
+      .css(this.rectangleCSS)
+      .appendTo(this.element);
+    var context = this.rectangle.get(0).getContext('2d');
+    context.canvas.width = this.element.width();
+    context.canvas.height = $(window).height();
 
     this.element
       .mousedown(function(event) {
@@ -553,7 +563,18 @@ $.widget('tabspane.multiselect', {
   },
 
   refresh: function() {
-    this.items = $(this.itemsSelector);
+    this.items = $(this.options.itemsSelector);
+    var widget = this;
+    $(this.items).each(function(index, item) {
+      var offset = $(item).offset();
+      widget.itemsCoords.push({
+        id: item.id,
+        x1: offset.left,
+        y1: offset.top,
+        x2: offset.left + $(item).width(),
+        y2: offset.top + $(item).height()
+      });
+    });
   },
 
   log: function(messages) {
@@ -573,8 +594,10 @@ $.widget('tabspane.multiselect', {
 
   _dragInit: function(event) {
     this._setState(this.IS_DRAGGING);
-    this.element.css({ cursor: 'crosshair' });
+    this.refresh();
     this.coords = { clientX: event.clientX, clientY: event.clientY };
+    this.scrollTop = $(window).scrollTop();
+    this.scrollLeft = $(window).scrollLeft();
     this.element.bind('mousemove', { widget: this }, this._dragMove);
     this.log('drag init');
   },
@@ -585,12 +608,13 @@ $.widget('tabspane.multiselect', {
       width: event.clientX - widget.coords.clientX,
       height: event.clientY - widget.coords.clientY
     };
+
     if (widget.state != widget.IS_SELECTING && (Math.abs(size.width) > 5) && (Math.abs(size.height) > 5)) {
       widget._rectangleInit(size);
     }
     // make selection work faster
     if (size.width % 2 || size.height % 2) {
-      widget._rectangleDraw(size);
+      widget._rectangleDraw(widget.coords, size);
     }
   },
 
@@ -608,34 +632,84 @@ $.widget('tabspane.multiselect', {
   },
   _rectangleInit: function(size) {
     this._setState(this.IS_SELECTING);
-    this.rectangle
-      .css({
-        left: this.coords.clientX + 'px',
-        top: this.coords.clientY + 'px'
-      })
-      .show();
-    this._rectangleDraw(size);
+    this.rectangle.show();
+    this._rectangleDraw(this.coords, size);
 
     this.log('selection starting');
   },
-  _rectangleDraw: function(size) {
-    var css = {
-      width: Math.abs(size.width) + 'px',
-      height: Math.abs(size.height) + 'px'
-    };
+  _rectangleDraw: function(coords, size) {
+    var rect = this._rectangleCoords(
+      coords.clientX + this.scrollLeft,
+      coords.clientY + this.scrollTop,
+      size.width,
+      size.height
+    );
 
-    if (size.width < 0) {
-      css.left = this.coords.clientX + size.width;
-    }
-    if (size.height < 0) {
-      css.top = this.coords.clientY + size.height;
-    }
-
-    this.rectangle.css(css);
+    var canvas = this.rectangle.get(0);
+    var context = canvas.getContext('2d');
+    canvas.width = canvas.width;
+    context.beginPath();
+    context.rect(
+      coords.clientX + this.scrollLeft,
+      coords.clientY + this.scrollTop,
+      size.width,
+      size.height
+    );
+    context.lineWidth = 1;
+    context.strokeStyle = 'red';
+    context.stroke();
+    this.highlightAll(rect)
+  },
+  /**
+   * Get proper rectangle coordinates assuming that width/height may be negative (drawn left/up)
+   * @param x1
+   * @param y1
+   * @param width
+   * @param height
+   * @returns {{}}
+   * @private
+   */
+  _rectangleCoords: function(x1, y1, width, height) {
+    var rect = {};
+    rect.x1 = width < 0 ? x1 + width : x1;
+    rect.y1 = height < 0 ? y1 + height : y1;
+    rect.x2 = rect.x1 + Math.abs(width);
+    rect.y2 = rect.y1 + Math.abs(height);
+    return rect;
+  },
+  _rectangleIntersect: function(r1, r2) {
+    return !(r2.x1 > r1.x2 ||
+      r2.x2 < r1.x1 ||
+      r2.y1 > r1.y2 ||
+      r2.y2 < r1.y1);
   },
   _rectangleDestroy: function() {
     this.rectangle.hide();
-  }
+  },
+  highlightAll: function(rect) {
+    var widget = this;
+    this.unHighlightAll();
+
+    this.itemsCoords.forEach(function(item) {
+      if (widget._rectangleIntersect(rect, item)) {
+        var i = $('#' + item.id);
+        widget.itemsHighlighted.push(i);
+        widget.highlight(i);
+      }
+    });
+  },
+  highlight: function(item) {
+    item.addClass('tabHighlighted');
+  },
+  unHighlightAll: function() {
+    var i;
+    while (i = this.itemsHighlighted.shift()) {
+      this.unHighlight(i);
+    }
+  },
+  unHighlight: function(item) {
+    item.removeClass('tabHighlighted');
+  },
 });
 
 $('.appleOddRow').multiselect({

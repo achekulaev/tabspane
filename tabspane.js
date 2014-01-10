@@ -2,18 +2,36 @@ var body = $('body'),
     tabsPane = $('#tabsPane'),
     historyPane = $('#historyPane');
 
-//onload actions
+/*** Begin runtime ***/
+
 $(function(){
   Foreground.initLayout();
   Foreground.initSearchField();
   Foreground.initHistoryPane();
-  Foreground.initShortcuts();
+  Foreground.initKeyboardShortcuts();
 
   //Tab context Menu
   Menu.fill([
-    { label: 'Red', callback: function() { alert(1); } },
+    { label: 'Move to new window', callback: function(element) { console.log(element); } },
     { label: 'Dazdingo' },
-    { label: 'Blue' }
+    {
+      label: 'Close selected',
+      callback: function(element) {
+        var ids = [];
+        if (Foreground.selectionResult.length) {
+          // There are selected elements
+          $(Foreground.selectionResult).each(function(index, jElement) {
+            ids.push(jElement.attr('id').replace('tabThumb', ''));
+          });
+//          console.log(ids);
+          Tabs.close(ids);
+          Foreground.unselectAll();
+        } else {
+          // The are no selected elements
+          Tabs.close([element.id.replace('tabThumb', '')]);
+        }
+      }
+    }
   ]);
 
 // Messages handling
@@ -28,9 +46,15 @@ $(function(){
     Foreground.initMultiselect();
 
     // Request initial tabs data from background page
-    Foreground.sendMessage({'command': 'tabList', currentWindow: currentWindow.id}, function(paneData) {
-      Foreground.initTabs(paneData.tabs);
-    });
+    Foreground.sendMessage(
+      {
+        command: 'tabList',
+        currentWindow: currentWindow.id
+      },
+      function(paneData) {
+        Foreground.initTabs(paneData.tabs);
+      }
+    );
   });
 
 });
@@ -38,13 +62,15 @@ $(function(){
 /*** End runtime ***/
 
 /**
- * Collection to encapsulate loading extension parts
+ * Object to encapsulate loading of extension parts
  */
 Foreground = {
   /* const */
   ALL_WINDOWS: -15,
   /* vars */
   currentWindow: null,
+  selectionInstance: null,
+  selectionResult: [],
   /**
    * Init style related properties
    */
@@ -100,7 +126,7 @@ Foreground = {
     });
   },
 
-  initShortcuts: function() {
+  initKeyboardShortcuts: function() {
     shortcut.add('Enter', function () {
       Tabs.activateHighlighted();
     });
@@ -116,6 +142,7 @@ Foreground = {
 //      delay: 20,
 //      distance: 5,
 //      distance: 5,
+      cancel: '.tabDescription',
       scroll: false,
       start: function (event, ui) {
         //on drag start
@@ -130,13 +157,24 @@ Foreground = {
   },
 
   initMultiselect: function() {
-    $('.appleOddRow').multiselect({
+    var _this = this;
+    this.selectionInstance = $('.appleOddRow').multiselect({
       itemsSelector: '.tabThumb',
-      cancelSelectors: ['div.tabCapture'],
-      onSelected: function(event, elements) {
-        console.log(elements);
+      cancelSelectors: ['div.tabCapture', '#tabMenu', 'menuitem'],
+      onSelected: function(event, result) {
+        _this.selectionResult = result.elements;
       }
     });
+  },
+
+  unselectAll: function() {
+    this.selectionInstance.multiselect('unHighlightAll');
+    this.selectionResult = [];
+  },
+
+  refreshEvents: function() {
+    tabsPane.sortable('refresh');
+//    $('.appleOddRow').multiselect('refresh');
   },
 
   /**
@@ -240,7 +278,8 @@ Tabs = {
         Tabs.render(tab).appendTo(tabsPane);
       }
     });
-    tabsPane.sortable('refresh');
+
+    Foreground.refreshEvents();
   },
 
   update: function(changeInfo, tab) {
@@ -273,7 +312,7 @@ Tabs = {
           case 'indexFwd':
             var fwdTarget = tabsPane.find('.tabOuter:nth-child({0})'.format(changeInfo.indexFwd + 1));
             tabThumb.parent(null).insertAfter(fwdTarget);
-            tabsPane.sortable('refresh');
+            Foreground.refreshEvents();
             break;
           case 'indexBkwd':
             var bkwdTarget = tabsPane.find('.tabOuter:nth-child({0})'.format(changeInfo.indexBkwd > 0 ? changeInfo.indexBkwd : 1));
@@ -282,7 +321,7 @@ Tabs = {
             } else {
               tabThumb.parent(null).insertBefore(bkwdTarget);
             }
-            tabsPane.sortable('refresh');
+            Foreground.refreshEvents();
             break;
           default:
             break;
@@ -298,6 +337,7 @@ Tabs = {
       Tabs.unHighlight(tabId);
       $('#tabThumb' + tabId).parent(null).remove();
     });
+    Foreground.refreshEvents();
   },
 
   exists: function(tabId) {
@@ -306,14 +346,15 @@ Tabs = {
 
   close: function(tabIdArray) {
     $(tabIdArray).each(function(index, tabId){
-      chrome.tabs.remove(tabId, function() {
+      chrome.tabs.remove(parseInt(tabId), function() {
         Tabs.remove([tabId]);
       });
     });
   },
 
   clear: function() {
-    tabsPane.html('');
+    tabsPane.empty();
+    Foreground.refreshEvents();
   },
 
   /**
@@ -371,12 +412,7 @@ Tabs = {
 
     //holder
     skeleton.find('.tabThumb')
-      .attr('id', 'tabThumb' + tab.id);
-    skeleton.find('.tabCapture')
-      .click(function() {
-        Tabs.activate(tab.id);
-        Tabs.unHighlightAll();
-      })
+      .attr('id', 'tabThumb' + tab.id)
       .mousedown(function(event) {
         if (event.which == 3) {
           Menu.show(event, this);
@@ -384,6 +420,11 @@ Tabs = {
       })
       .mouseleave(function() {
         Menu.hide();
+      });
+    skeleton.find('.tabCapture')
+      .click(function() {
+        Tabs.activate(tab.id);
+        Tabs.unHighlightAll();
       });
     skeleton.find('.tabCloseButton')
       .click(function(event) {
@@ -467,6 +508,7 @@ Tabs = {
         //empty search. all tabs
         $(this).css({ display: 'inline-block' });
         firstHighlighted = true;
+        Foreground.refreshEvents();
       }
 
     });
@@ -478,6 +520,7 @@ Tabs = {
     }
 
     $('.tabOuter').promise().done(function() {
+      Foreground.refreshEvents();
       //Show history pane only when there is 1 or 0 rows of tab results
       if (visibleCount <= 6) {
         historyPane.historyPane({'filter': search});

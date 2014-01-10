@@ -4,6 +4,7 @@
  */
 Menu = {
   _menu : $('#tabMenu'),
+  target: null,
 
   init: function() {
     //prevent context menu
@@ -19,10 +20,11 @@ Menu = {
     shortcut.add('Escape', function() {
       menu.hide();
     });
+    this._menu = this._menu.detach();
   },
 
   show: function(mouseEvent, element) {
-    this._menu = $('#tabMenu').detach();
+    this.target = element;
     this._menu.appendTo(element);
     this._menu
       .css({
@@ -33,7 +35,7 @@ Menu = {
   },
 
   hide: function() {
-    this._menu.hide().css({ left: 0, top: 0 });
+    this._menu = this._menu.detach();
   },
 
   /**
@@ -41,12 +43,17 @@ Menu = {
    * @param items Array of item objects {label, callback, color, icon}
    */
   append: function(items) {
-    var menu = this._menu;
+    var menu = this;
+    var menuDOM = this._menu;
     items.forEach(function(item, index) {
       $('<menuitem />')
         .attr({ label: item.label, id: 'menuitem'+index })
-        .appendTo(menu)
-        .click(item.callback ? item.callback : function() {});
+        .appendTo(menuDOM)
+        .click(function() {
+          if (item.callback) {
+            item.callback(menu.target);
+          }
+        });
     });
   },
 

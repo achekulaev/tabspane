@@ -9,35 +9,7 @@ $(function(){
   Foreground.initSearchField();
   Foreground.initHistoryPane();
   Foreground.initKeyboardShortcuts();
-
-  //Tab context Menu
-  Menu.fill([
-    {
-      label: 'To a new window',
-      callback: function(element) {
-        var selection = Foreground.getSelection();
-        Foreground.sendMessage({ command: 'detach', tabIds: selection }, null);
-      }
-    },
-    {
-      label: 'Close',
-      callback: function(element) {
-        var ids = [];
-        if (Foreground.selectionResult.length) {
-          // There are selected elements
-          $(Foreground.selectionResult).each(function(index, jElement) {
-            ids.push(jElement.attr('id').replace('tabThumb', ''));
-          });
-//          console.log(ids);
-          Tabs.close(ids);
-          Foreground.unselectAll();
-        } else {
-          // The are no selected elements
-          Tabs.close([element.id.replace('tabThumb', '')]);
-        }
-      }
-    }
-  ]);
+  Foreground.initContextMenu();
 
 // Messages handling
   chrome.extension.onMessage.addListener(function(request, sender, response) {
@@ -183,6 +155,36 @@ Foreground = {
   unselectAll: function() {
     this.selectionInstance.multiselect('unHighlightAll');
     this.selectionResult = [];
+  },
+
+  initContextMenu: function() {
+    Menu.fill([
+      {
+        label: 'To a new window',
+        callback: function(element) {
+          var selection = Foreground.getSelection();
+          Foreground.sendMessage({ command: 'detach', tabIds: selection }, null);
+          Foreground.unselectAll();
+        }
+      },
+      {
+        label: 'Close',
+        callback: function(element) {
+          var ids = [];
+          if (Foreground.selectionResult.length) {
+            // There are selected elements
+            $(Foreground.selectionResult).each(function(index, jElement) {
+              ids.push(jElement.attr('id').replace('tabThumb', ''));
+            });
+            Tabs.close(ids);
+            Foreground.unselectAll();
+          } else {
+            // The are no selected elements
+            Tabs.close([element.id.replace('tabThumb', '')]);
+          }
+        }
+      }
+    ]);
   },
 
   refreshEvents: function() {

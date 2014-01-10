@@ -39,6 +39,21 @@ Background = {
 
   isExtensionURL: function(url) {
     return chrome.extension.getURL('tabspane.html') == url;
+  },
+
+  detach: function(tabIds) {
+    chrome.windows.create({ url: 'about:blank' }, function(win) {
+      tabIds.forEach(function(value) {
+        chrome.tabs.move(parseInt(value), { windowId: win.id, index: -1 });
+      });
+      //close first empty tab in a new window
+      chrome.tabs.query(
+        { windowId: win.id },
+        function(tabs) {
+          chrome.tabs.remove(tabs[0].id);
+        }
+      );
+    });
   }
 };
 
@@ -64,6 +79,9 @@ chrome.extension.onMessage.addListener(
         break;
       case 'move':
         chrome.tabs.move(parseInt(request.tabId), { windowId: request.windowId, index: parseInt(request.index) });
+        break;
+      case 'detach':
+        Background.detach(request.tabIds);
         break;
       default:
         return false;

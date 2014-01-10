@@ -12,10 +12,15 @@ $(function(){
 
   //Tab context Menu
   Menu.fill([
-    { label: 'Move to new window', callback: function(element) { console.log(element); } },
-    { label: 'Dazdingo' },
     {
-      label: 'Close selected',
+      label: 'To a new window',
+      callback: function(element) {
+        var selection = Foreground.getSelection();
+        Foreground.sendMessage({ command: 'detach', tabIds: selection }, null);
+      }
+    },
+    {
+      label: 'Close',
       callback: function(element) {
         var ids = [];
         if (Foreground.selectionResult.length) {
@@ -165,6 +170,14 @@ Foreground = {
         _this.selectionResult = result.elements;
       }
     });
+  },
+
+  getSelection: function() {
+    var ids = [];
+    $(this.selectionResult).each(function(index, jElement) {
+      ids.push(jElement.attr('id').replace('tabThumb', ''));
+    });
+    return ids;
   },
 
   unselectAll: function() {
@@ -557,7 +570,7 @@ Groups = {
     })
   }
 };
-Groups.init();
+//Groups.init();
 
 /*** Helper functions ***/
 

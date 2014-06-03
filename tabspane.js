@@ -559,7 +559,7 @@ Groups = {
   },
 
   init: function() {
-    this.db = SpahQL.db(this.data);
+    
   },
 
   create: function(title) {

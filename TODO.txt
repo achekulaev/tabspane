@@ -1,16 +1,16 @@
-menu http://codepen.io/sstephenson/pen/zepwD
+* when page is activated there's a need for timeout before making screenshot
+* when search filter has something entered new tab always shows even if it doesn't match the filter
+  --menu http://codepen.io/sstephenson/pen/zepwD
 * redo search field with type=search
 * remove current screenshot if tab gets redirected to another url
 
 + implement multiwindow support
 + replace search field with custom dropdown with filtering feature
-http://jqueryui.com/autocomplete/#default
-http://stackoverflow.com/questions/3695184/jquery-autocomplete-highlighting
+  --http://jqueryui.com/autocomplete/#default
+  --http://stackoverflow.com/questions/3695184/jquery-autocomplete-highlighting
 + Implement simple custom tab grouping
 * when favicon is updated update screenshot if screenshot is absent and thumb only has favicon
-chrome://favicon/size/16@1x/https://www.google.com
-
-
+  --chrome://favicon/size/16@1x/https://www.google.com
 + movement with arrows
 
 
